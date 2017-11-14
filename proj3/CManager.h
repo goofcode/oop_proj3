@@ -23,6 +23,10 @@ private:
 	CManager();
 	~CManager() {};
 	CManager(const CManager& other);
+	ID3DXFont* Font;
+	ID3DXSprite* Sprite;
+	
+	
 
 public:
 	static CManager* GetInstance() {
@@ -35,6 +39,7 @@ public:
 		PLAYER1_WIN_BY_PLAYER2_BLACKBALL,
 		PLAYER1_WIN_BY_PLAYER2_WHITEBALL,
 		CONTINUE,
+		FREEBALL,
 		PLAYER2_WIN_CLEAR,
 		PLAYER2_WIN_BY_PLAYER1_BLACKBALL,
 		PLAYER2_WIN_BY_PLAYER1_WHITEBALL
@@ -45,6 +50,9 @@ public:
 	void goal(const CSphere& ball);
 	int finishTurn();
 	void first_hit_in_turn(const CSphere& ball);
+	void showMessage(IDirect3DDevice9* Device, int seconds, string message);
+	void showGameInfo(IDirect3DDevice9* Device);
+	void createFont(IDirect3DDevice9* Device);
 private:
 
 	static CManager *Manager;

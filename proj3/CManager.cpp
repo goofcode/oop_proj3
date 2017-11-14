@@ -13,6 +13,46 @@ void CManager::first_hit_in_turn(const CSphere & ball)
 		firsthit_in_turn = 1;
 }
 
+void CManager::showMessage(IDirect3DDevice9* Device, int seconds, string message)
+{
+	
+
+}
+
+void CManager::showGameInfo(IDirect3DDevice9 * Device)
+{
+	
+	if (Sprite) Sprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
+
+	RECT score_rect[2] = { { 0,0,0,0 },{ 0, 30, 0, 0 } },
+		ball_type_rect[2] = { { 900, 0, 0,0 },{ 900, 30, 0, 0 } },
+		turn_rect = { 600,0,0,0 };
+
+	for (int i = 0; i < 2; i++)
+	{
+		ostringstream sstream;
+		sstream << "Player " << i + 1 << ": " << getScore(i + 1) << " ball(s)";
+		Font->DrawTextA(Sprite, sstream.str().c_str(), -1, &score_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+
+		int ball_type = getBallType(i + 1);
+		if (ball_type != -1)
+			Font->DrawTextA(Sprite, (ball_type == TYPE_SOLID_BALL ? "SOLID" : "STRIPE"), -1, &ball_type_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+	}
+	Font->DrawTextA(Sprite, getTurn() == 1 ? "PLAYER 1 Turn" : "PLAYER 2 Turn", -1, &turn_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+	Sprite->End();
+
+	Device->EndScene();
+	Device->Present(0, 0, 0, 0);
+	Device->SetTexture(0, NULL);
+}
+
+void CManager::createFont(IDirect3DDevice9 * Device)
+{
+	D3DXCreateFont(Device, 25, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("±¼¸²Ã¼"), &Font);
+	D3DXCreateSprite(Device, &Sprite);
+}
+
+
 
 int CManager::getBallType(int playernum)
 {
@@ -44,16 +84,17 @@ void CManager::goal(const CSphere & ball)
 		if (ball.getBallType() == TYPE_SOLID_BALL || ball.getBallType() == TYPE_STRIPE_BALL)
 			firstGoal = true;
 	}
-	else
+	else {
 		updateScore(ball.getBallType());
+	}
 }
 
 int CManager::finishTurn()
 {
-	if (firsthit_in_turn == 0) {
+	if ((firsthit_in_turn == 0)|| (firsthit_in_turn == 2)) {
 		turnover();
 		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
-		return CONTINUE;
+		return FREEBALL;
 	}
 	if (blackball_goal_in_turn) {
 
@@ -72,7 +113,7 @@ int CManager::finishTurn()
 
 		turnover();
 		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
-		return CONTINUE;
+		return FREEBALL;
 	}
 	// normal balls goals in turn
 
@@ -105,9 +146,9 @@ int CManager::finishTurn()
 		}
 
 		// case of turn over
-		else if ((solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_SOLID_BALL)
+		else if ((firsthit_in_turn == 1) && (solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_SOLID_BALL)
 			|| (solid_goal_in_turn != 0 && stripe_goal_in_turn == 0 && ball_type[turn] == TYPE_STRIPE_BALL)
-			|| (solid_goal_in_turn == 0 && stripe_goal_in_turn == 0) || (firsthit_in_turn == 2)) {
+			|| (solid_goal_in_turn == 0 && stripe_goal_in_turn == 0)) {
 			turnover();
 			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 			return CONTINUE;
