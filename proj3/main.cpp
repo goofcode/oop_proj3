@@ -5,8 +5,7 @@ HINSTANCE hInstance;
 
 // global DX interfaces
 IDirect3DDevice9* Device = NULL;
-ID3DXFont* Font;
-ID3DXSprite* Sprite;
+
 
 // 3D components
 CTable			table;
@@ -44,10 +43,7 @@ bool Setup( )
 	Device->SetRenderState(D3DRS_LIGHTING, TRUE);
 	Device->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
 	Device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-
-	// create font
-	D3DXCreateFont(Device, 25, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("±¼¸²Ã¼"), &Font);
-	D3DXCreateSprite(Device, &Sprite);
+	CManager::GetInstance()->createFont(Device);
 
 	return true;
 }
@@ -114,31 +110,7 @@ bool Display(float timeDelta)
 
 
 		// draw game information text
-		CManager* manager = CManager::GetInstance();
-		if (Sprite) Sprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
-
-		RECT score_rect[2] = { { 0,0,0,0 }, { 0, 30, 0, 0 } }, 
-			ball_type_rect[2] ={{ 900, 0, 0,0 },{ 900, 30, 0, 0 }}, 
-			turn_rect = { 600,0,0,0 };
-		
-		for (int i = 0; i < 2; i++)
-		{
-			ostringstream sstream;
-			sstream << "Player " << i + 1 << ": " << manager->getScore(i + 1) << " ball(s)";
-			Font->DrawTextA(Sprite, sstream.str().c_str(), -1, &score_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
-
-			int ball_type = manager->getBallType(i + 1);
-			if (ball_type != -1)
-				Font->DrawTextA(Sprite, (ball_type == TYPE_SOLID_BALL ? "SOLID" : "STRIPE"), -1, &ball_type_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
-		}
-		Font->DrawTextA(Sprite, manager->getTurn() == 1?"PLAYER 1 Turn": "PLAYER 2 Turn", -1, &turn_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
-		Sprite->End();
-
-
-		// end display
-		Device->EndScene( );
-		Device->Present(0, 0, 0, 0);
-		Device->SetTexture(0, NULL);
+		CManager::GetInstance()->showGameInfo(Device);
 	}
 	return true;
 }
@@ -267,7 +239,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					KillTimer(hwnd, TURN_OVER_TIMER_ID);
 					cout << "turn finished" << endl;
 
-					if (result != CManager::CONTINUE) {
+					if (result != CManager::CONTINUE && result != CManager::FREEBALL) {
 						string result_str;
 						switch (result) {
 						case CManager::PLAYER1_WIN_CLEAR: 
