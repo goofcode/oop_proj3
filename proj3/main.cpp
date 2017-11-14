@@ -104,9 +104,9 @@ bool Display(float timeDelta)
 		
 		// draw components
 		table.draw(Device);
-		cue.draw(Device);
 		for (int i = 0; i < NUM_BALL; i++)
 			ball[i].draw(Device);
+		cue.draw(Device);
 
 
 		// draw game information text

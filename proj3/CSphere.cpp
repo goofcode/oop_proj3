@@ -1,69 +1,68 @@
 #include "CSphere.h"
 
-bool CSphere::isColliding[NUM_BALL][NUM_BALL] = {false,};
+bool CSphere::isColliding[NUM_BALL][NUM_BALL] = { false, };
 int CSphere::goaled_ball = 0;
 
-CSphere::CSphere(void) { 
-	radius = BALL_RADIUS; 
+CSphere::CSphere(void) {
+	radius = M_RADIUS;
 	pMesh = NULL;
-	m_numMaterials = 0;
-	m_pMeshMaterials = NULL;
-	m_ppMeshTextures = NULL;
 }
+CSphere::~CSphere(void) {}
 
 bool CSphere::create(IDirect3DDevice9 * pDevice, int id, const float pos[3])
 {
-	if(NULL == pDevice)
+	if (NULL == pDevice)
 		return false;
-	
+
 	initState(id, pos);
-	if (loadModel(pDevice) == false) return false;
+	loadMaterial();
+	if (getMesh(pDevice) == false) return false;
+	if (getTexture(pDevice) == false) return false;
+	mapTexture();
+
 	return true;
 }
 
 void CSphere::destroy(void)
 {
-	// Delete the materials 
-	if (m_pMeshMaterials != NULL) delete[] m_pMeshMaterials;
-
-	// Delete the textures 
-	for (DWORD i = 0; i < m_numMaterials; i++)
-		if (m_ppMeshTextures[i] != NULL) m_ppMeshTextures[i]->Release();
-
-	if (m_ppMeshTextures != NULL) delete[] m_ppMeshTextures;
-	if (pMesh != NULL) pMesh->Release();
+	if (pMesh != NULL) {
+		pMesh->Release();
+		pMesh = NULL;
+	}
 }
 
 void CSphere::draw(IDirect3DDevice9* pDevice)
 {
-	if (NULL == pDevice) return;
+	if (NULL == pDevice)
+		return;
 
-	// rotation, translation and draw
-	D3DXMATRIX scale, rotate, trans;
-	D3DXMatrixScaling(&scale, getRadius(), getRadius(), getRadius());
-	D3DXMatrixTranslation(&trans, center.x, center.y, center.z);
-	D3DXMatrixRotationYawPitchRoll(&rotate, 0, rotation.z, rotation.x);
+	D3DXMatrixIdentity(&mWorld);
 
-	mWorld = scale*rotate*trans;
+	// translation
+	D3DXMatrixTranslation(&mWorld, this->center.x, this->center.y, this->center.z);
+	// rotation
+	mapTexture();
+
 	pDevice->SetTransform(D3DTS_WORLD, &mWorld);
-	pDevice->SetMaterial(&m_pMeshMaterials[0]);
-	pDevice->SetTexture(0, m_ppMeshTextures[0]);
-	pMesh->DrawSubset(0);
+	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetMaterial(&mMtrl);
+	pDevice->SetFVF(FVF_SPHERE_VERTEX);
+	this->pMesh->DrawSubset(0);
 }
 
 bool CSphere::hasIntersected(CSphere& ball)
 {
-	return distance(this->center.x, this->center.z, ball.getCenter( ).x, ball.getCenter( ).z) <= (ball.getRadius( ) + this->getRadius( ));
+	return distance(this->center.x, this->center.z, ball.getCenter().x, ball.getCenter().z) <= (ball.getRadius() + this->getRadius());
 }
 
 bool CSphere::hitBy(CSphere& ball)
 {
-	if(hasIntersected(ball) && !getColliding(this->id, ball.getID())) {
-		setColliding(this->id, ball.getID( ));
+	if (hasIntersected(ball) && !getColliding(this->id, ball.getID())) {
+		setColliding(this->id, ball.getID());
 
-		float m1 = BALL_MASS, m2 = BALL_MASS;
-		float v1_x = this->getVelocity_X( ), v1_y = this->getVelocity_Z( );
-		float v2_x = ball.getVelocity_X( ), v2_y = ball.getVelocity_Z( );
+		float m1 = M_MASS, m2 = M_MASS;
+		float v1_x = this->getVelocity_X(), v1_y = this->getVelocity_Z();
+		float v2_x = ball.getVelocity_X(), v2_y = ball.getVelocity_Z();
 
 		float theta = angle(this->center.x, this->center.z, ball.center.x, ball.center.z);
 		float v1_x_p = (m1 - RESIST*m2) / (m1 + m2)*(v1_x*cos(theta) + v1_y*sin(theta)) + (m2 + RESIST*m2) / (m1 + m2)*(v2_x*cos(theta) + v2_y*sin(theta));
@@ -83,31 +82,30 @@ bool CSphere::hitBy(CSphere& ball)
 		return true;
 	}
 	// if collision detected and still intersected, skip this time
-	else if (hasIntersected(ball) && getColliding(this->id, ball.getID())){ return true; }
+	else if (hasIntersected(ball) && getColliding(this->id, ball.getID())) { return true; }
 	// if two balls are completely separated, clear collision
 	else if (!hasIntersected(ball)) { clearColliding(this->id, ball.getID()); return false; }
 }
 
 void CSphere::disappear()
 {
-	this->setCenter(-4.0f+ (BALL_RADIUS + 0.02f)*goaled_ball, 0.0f, -4.0f);
-	this->setPower(0,0, 0);
-	goaled_ball++;
+	this->setCenter(-4.0f + 0.3f*goaled_ball, 0.0f, -4.0f);
+	this->setPower(0, 0, 0);
 }
 
 void CSphere::ballUpdate(float timeDiff)
 {
 	const float TIME_SCALE = 3.3f;
-	D3DXVECTOR3 center = this->getCenter( );
+	D3DXVECTOR3 center = this->getCenter();
 	double vx = this->velocity.x;
 	double vy = this->velocity.y;
 	double vz = this->velocity.z;
 
-	if(abs(vx) > 0.01 || abs(vz) > 0.01)
+	if (abs(vx) > 0.01 || abs(vz) > 0.01)
 	{
 		this->setCenter(center.x + TIME_SCALE*timeDiff*vx,
-						center.y + TIME_SCALE*timeDiff*vy,
-						center.z + TIME_SCALE*timeDiff*vz);
+			center.y + TIME_SCALE*timeDiff*vy,
+			center.z + TIME_SCALE*timeDiff*vz);
 
 		rotation.z += vx * POWER_TO_ANGLE;
 		rotation.x += vz * POWER_TO_ANGLE;
@@ -115,17 +113,17 @@ void CSphere::ballUpdate(float timeDiff)
 	else { this->setPower(0, 0, 0); }
 
 	float rate = 1 - (1 - DECREASE_RATE)*timeDiff * 400;
-	if(rate < 0) rate = 0;
-	
+	if (rate < 0) rate = 0;
+
 	this->setPower(getVelocity_X() * rate, 0, getVelocity_Z() * rate);
 }
 
 
-int CSphere::getID( ) const { return this->id; }
+int CSphere::getID() const { return this->id; }
 float CSphere::getRadius(void)  const { return this->radius; }
 D3DXVECTOR3 CSphere::getCenter(void) const { return center; }
-float CSphere::getVelocity_X( ) const { return this->velocity.x; }
-float CSphere::getVelocity_Z( ) const { return this->velocity.z; }
+float CSphere::getVelocity_X() const { return this->velocity.x; }
+float CSphere::getVelocity_Z() const { return this->velocity.z; }
 bool CSphere::getColliding(int id1, int id2) const
 {
 	return isColliding[id1][id2];
@@ -152,10 +150,10 @@ void CSphere::setPower(float vx, float vy, float vz)
 	this->velocity.y = vy;
 	this->velocity.z = vz;
 }
-void CSphere::setColliding(int id1, int id2) { 
+void CSphere::setColliding(int id1, int id2) {
 	isColliding[id1][id2] = isColliding[id2][id1] = true;
 }
-void CSphere::clearColliding(int id1, int id2){
+void CSphere::clearColliding(int id1, int id2) {
 	isColliding[id1][id2] = isColliding[id2][id1] = false;
 }
 
@@ -168,7 +166,7 @@ void CSphere::initState(int id, const float pos[3])
 	this->velocity.x = 0;
 	this->velocity.y = 0;
 	this->velocity.z = 0;
-	
+
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> pi_rand(-PI, PI);
@@ -177,33 +175,52 @@ void CSphere::initState(int id, const float pos[3])
 	this->rotation.z = pi_rand(gen);
 }
 
-bool CSphere::loadModel(IDirect3DDevice9 * pDevice)
+void CSphere::loadMaterial()
 {
-	LPD3DXBUFFER pMaterialBuffer;
-	if (FAILED(D3DXLoadMeshFromX("rsc\\ball.x", D3DXMESH_MANAGED, pDevice, NULL, &pMaterialBuffer, NULL, &m_numMaterials, &pMesh)))
-		return false;
-
-	D3DXMATERIAL* pMaterials = (D3DXMATERIAL*)pMaterialBuffer->GetBufferPointer();
-
-	m_pMeshMaterials = new D3DMATERIAL9[m_numMaterials];
-	m_ppMeshTextures = new LPDIRECT3DTEXTURE9[m_numMaterials];
-	
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
 	this->mMtrl.Ambient = d3d::WHITE;
 	this->mMtrl.Diffuse = d3d::WHITE;
 	this->mMtrl.Specular = d3d::WHITE;
 	this->mMtrl.Emissive = d3d::WHITE;
-	this->mMtrl.Power = 2.0f;
-	//m_pMeshMaterials[0] = pMaterials[0].MatD3D;
-	//m_pMeshMaterials[0].Ambient = m_pMeshMaterials[0].Diffuse;
-	m_pMeshMaterials[0] = mMtrl;
-	
-	ostringstream sstream;
-	sstream << "rsc\\" <<  this->id << ".jpg";
-	cout << "reading " << sstream.str() << endl;
+	this->mMtrl.Power = 5.0f;
+}
 
-	if (FAILED(D3DXCreateTextureFromFile(pDevice, sstream.str().c_str(), &m_ppMeshTextures[0])))
+bool CSphere::getMesh(IDirect3DDevice9 * pDevice)
+{
+	LPD3DXMESH tmpMesh;
+	if (FAILED(D3DXCreateSphere(pDevice, getRadius(), 50, 50, &tmpMesh, NULL)))  return false;
+	if (FAILED(tmpMesh->CloneMeshFVF(D3DXMESH_SYSTEMMEM, FVF_SPHERE_VERTEX, pDevice, &pMesh))) return false;
+	tmpMesh->Release();
+	return true;
+}
+
+bool CSphere::getTexture(IDirect3DDevice9 * pDevice)
+{
+	ostringstream sstream;
+	sstream << "rsc\\"<< this->id << ".jpg";
+	if (FAILED(D3DXCreateTextureFromFile(pDevice, sstream.str().c_str(), &m_pTexture)))
 		return false;
 	return true;
 }
 
+void CSphere::mapTexture()
+{
+	if (SUCCEEDED(pMesh->LockVertexBuffer(0, (LPVOID *)&m_pVerts))) {
+		m_numVerts = pMesh->GetNumVertices();
+
+		D3DXMATRIX m_rotate;
+
+		D3DXMatrixIdentity(&m_rotate);
+		D3DXMatrixRotationYawPitchRoll(&m_rotate, -this->rotation.y, -this->rotation.z, -this->rotation.x);
+
+		D3DXVECTOR3 rotated;
+
+		for (int i = 0; i < m_numVerts; i++) {
+			D3DXVec3TransformCoord(&rotated, &(m_pVerts[i].norm), &m_rotate);
+			m_pVerts[i].tu = asin(rotated.x) / (2 * PI) + 0.25f;
+			m_pVerts[i].tv = asin(rotated.y) / (PI)+0.5f;
+
+		}
+		pMesh->UnlockVertexBuffer();
+	}
+}
