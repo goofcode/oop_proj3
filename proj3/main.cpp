@@ -239,7 +239,9 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					KillTimer(hwnd, TURN_OVER_TIMER_ID);
 					cout << "turn finished" << endl;
 
-					if (result != CManager::CONTINUE) {
+					if (result == )
+
+					else if (result != CManager::CONTINUE) {
 						string result_str;
 						switch (result) {
 						case CManager::PLAYER1_WIN_CLEAR: 
@@ -252,6 +254,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 							result_str = "PLAYER 2 WIN"; break;
 						}
 						::MessageBox(hwnd, result_str.c_str(), "Game Over", 0);
+						exit(0);
 					}
 
 					turn_over = true;

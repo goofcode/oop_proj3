@@ -28,9 +28,10 @@ void CManager::goal(const CSphere & ball)
 	if (ball.getBallType() == TYPE_SOLID_BALL) solid_goal_in_turn++;
 	if (ball.getBallType() == TYPE_STRIPE_BALL) stripe_goal_in_turn++;
 
-	if (!firstGoal)
-		if (ball.getBallType() == TYPE_SOLID_BALL || ball.getBallType() == TYPE_STRIPE_BALL) 
+	if (!firstGoal) {
+		if (ball.getBallType() == TYPE_SOLID_BALL || ball.getBallType() == TYPE_STRIPE_BALL)
 			firstGoal = true;
+	}
 	else
 		updateScore(ball.getBallType());
 }
