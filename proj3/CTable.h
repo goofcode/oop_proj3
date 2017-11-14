@@ -20,17 +20,6 @@ class CTable{
 private:
 	bool isColliding[NUM_BALL];
 
-	DWORD m_numMaterials;
-	D3DMATERIAL9 *m_pMeshMaterials;
-	LPDIRECT3DTEXTURE9 *m_ppMeshTextures;
-
-	D3DXMATRIX				mWorld;
-	D3DMATERIAL9            mMtrl;
-	ID3DXMesh*              pMesh;
-
-	bool loadModel(IDirect3DDevice9* pDevice);
-
-
 public:
 	CTable();
 
@@ -42,4 +31,17 @@ public:
 	bool hasIntersectedWithHole(CSphere& ball);
 	void hitByInnerWall(CSphere& ball);
 	void goalIntoHole(CManager* manager, CSphere& ball);
+
+
+private:
+	DWORD m_numMaterials;
+	D3DMATERIAL9 *m_pMeshMaterials;
+	LPDIRECT3DTEXTURE9 *m_ppMeshTextures;
+
+	D3DXMATRIX				mWorld;
+	D3DMATERIAL9            mMtrl;
+	ID3DXMesh*              pMesh;
+
+	bool loadModel(IDirect3DDevice9* pDevice);
+
 };

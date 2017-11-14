@@ -4,50 +4,51 @@ bool CSphere::isColliding[NUM_BALL][NUM_BALL] = {false,};
 int CSphere::goaled_ball = 0;
 
 CSphere::CSphere(void) { 
-	radius = M_RADIUS; 
+	radius = BALL_RADIUS; 
 	pMesh = NULL;
+	m_numMaterials = 0;
+	m_pMeshMaterials = NULL;
+	m_ppMeshTextures = NULL;
 }
-CSphere::~CSphere(void) {}
 
 bool CSphere::create(IDirect3DDevice9 * pDevice, int id, const float pos[3])
 {
 	if(NULL == pDevice)
 		return false;
-
-	initState(id, pos);
-	loadMaterial();
-	if (getMesh(pDevice) == false) return false;
-	if (getTexture(pDevice) == false) return false;
-	mapTexture();
 	
+	initState(id, pos);
+	if (loadModel(pDevice) == false) return false;
 	return true;
 }
 
 void CSphere::destroy(void)
 {
-	if(pMesh != NULL) {
-		pMesh->Release( );
-		pMesh = NULL;
-	}
+	// Delete the materials 
+	if (m_pMeshMaterials != NULL) delete[] m_pMeshMaterials;
+
+	// Delete the textures 
+	for (DWORD i = 0; i < m_numMaterials; i++)
+		if (m_ppMeshTextures[i] != NULL) m_ppMeshTextures[i]->Release();
+
+	if (m_ppMeshTextures != NULL) delete[] m_ppMeshTextures;
+	if (pMesh != NULL) pMesh->Release();
 }
 
 void CSphere::draw(IDirect3DDevice9* pDevice)
 {
-	if(NULL == pDevice)
-		return;
+	if (NULL == pDevice) return;
 
-	D3DXMatrixIdentity(&mWorld);
+	// rotation, translation and draw
+	D3DXMATRIX scale, rotate, trans;
+	D3DXMatrixScaling(&scale, getRadius(), getRadius(), getRadius());
+	D3DXMatrixTranslation(&trans, center.x, center.y, center.z);
+	D3DXMatrixRotationYawPitchRoll(&rotate, 0, rotation.z, rotation.x);
 
-	// translation
-	D3DXMatrixTranslation(&mWorld, this->center.x, this->center.y, this->center.z);
-	// rotation
-	mapTexture();
-	
+	mWorld = scale*rotate*trans;
 	pDevice->SetTransform(D3DTS_WORLD, &mWorld);
-	pDevice->SetTexture(0, m_pTexture);
-	pDevice->SetMaterial(&mMtrl);
-	pDevice->SetFVF(FVF_SPHERE_VERTEX);
-	this->pMesh->DrawSubset(0);
+	pDevice->SetMaterial(&m_pMeshMaterials[0]);
+	pDevice->SetTexture(0, m_ppMeshTextures[0]);
+	pMesh->DrawSubset(0);
 }
 
 bool CSphere::hasIntersected(CSphere& ball)
@@ -55,12 +56,12 @@ bool CSphere::hasIntersected(CSphere& ball)
 	return distance(this->center.x, this->center.z, ball.getCenter( ).x, ball.getCenter( ).z) <= (ball.getRadius( ) + this->getRadius( ));
 }
 
-void CSphere::hitBy(CSphere& ball)
+bool CSphere::hitBy(CSphere& ball)
 {
 	if(hasIntersected(ball) && !getColliding(this->id, ball.getID())) {
 		setColliding(this->id, ball.getID( ));
 
-		float m1 = M_MASS, m2 = M_MASS;
+		float m1 = BALL_MASS, m2 = BALL_MASS;
 		float v1_x = this->getVelocity_X( ), v1_y = this->getVelocity_Z( );
 		float v2_x = ball.getVelocity_X( ), v2_y = ball.getVelocity_Z( );
 
@@ -79,17 +80,19 @@ void CSphere::hitBy(CSphere& ball)
 
 		this->setPower(power1_x, 0, power1_y);
 		ball.setPower(power2_x, 0, power2_y);
+		return true;
 	}
 	// if collision detected and still intersected, skip this time
-	else if (hasIntersected(ball) && getColliding(this->id, ball.getID())){ return; }
+	else if (hasIntersected(ball) && getColliding(this->id, ball.getID())){ return true; }
 	// if two balls are completely separated, clear collision
-	else if (!hasIntersected(ball)) { clearColliding(this->id, ball.getID( )); }
+	else if (!hasIntersected(ball)) { clearColliding(this->id, ball.getID()); return false; }
 }
 
 void CSphere::disappear()
 {
-	this->setCenter(-4.0f+0.3f*goaled_ball, 0.0f, -4.0f);
+	this->setCenter(-4.0f+ (BALL_RADIUS + 0.02f)*goaled_ball, 0.0f, -4.0f);
 	this->setPower(0,0, 0);
+	goaled_ball++;
 }
 
 void CSphere::ballUpdate(float timeDiff)
@@ -174,52 +177,33 @@ void CSphere::initState(int id, const float pos[3])
 	this->rotation.z = pi_rand(gen);
 }
 
-void CSphere::loadMaterial()
+bool CSphere::loadModel(IDirect3DDevice9 * pDevice)
 {
+	LPD3DXBUFFER pMaterialBuffer;
+	if (FAILED(D3DXLoadMeshFromX("rsc\\ball.x", D3DXMESH_MANAGED, pDevice, NULL, &pMaterialBuffer, NULL, &m_numMaterials, &pMesh)))
+		return false;
+
+	D3DXMATERIAL* pMaterials = (D3DXMATERIAL*)pMaterialBuffer->GetBufferPointer();
+
+	m_pMeshMaterials = new D3DMATERIAL9[m_numMaterials];
+	m_ppMeshTextures = new LPDIRECT3DTEXTURE9[m_numMaterials];
+	
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
 	this->mMtrl.Ambient = d3d::WHITE;
 	this->mMtrl.Diffuse = d3d::WHITE;
 	this->mMtrl.Specular = d3d::WHITE;
 	this->mMtrl.Emissive = d3d::WHITE;
-	this->mMtrl.Power = 5.0f;
-}
-
-bool CSphere::getMesh(IDirect3DDevice9 * pDevice)
-{
-	LPD3DXMESH tmpMesh;
-	if (FAILED(D3DXCreateSphere(pDevice, getRadius(), 50, 50, &tmpMesh, NULL)))  return false;
-	if (FAILED(tmpMesh->CloneMeshFVF(D3DXMESH_SYSTEMMEM, FVF_SPHERE_VERTEX, pDevice, &pMesh))) return false;
-	tmpMesh->Release();
-	return true;
-}
-
-bool CSphere::getTexture(IDirect3DDevice9 * pDevice)
-{
+	this->mMtrl.Power = 2.0f;
+	//m_pMeshMaterials[0] = pMaterials[0].MatD3D;
+	//m_pMeshMaterials[0].Ambient = m_pMeshMaterials[0].Diffuse;
+	m_pMeshMaterials[0] = mMtrl;
+	
 	ostringstream sstream;
-	sstream << "rsc\\"<<std::setw(2) << setfill('0') << this->id << ".jpg";
-	if (FAILED(D3DXCreateTextureFromFile(pDevice, sstream.str().c_str(), &m_pTexture)))
+	sstream << "rsc\\" <<  this->id << ".jpg";
+	cout << "reading " << sstream.str() << endl;
+
+	if (FAILED(D3DXCreateTextureFromFile(pDevice, sstream.str().c_str(), &m_ppMeshTextures[0])))
 		return false;
 	return true;
 }
 
-void CSphere::mapTexture()
-{
-	if (SUCCEEDED(pMesh->LockVertexBuffer(0, (LPVOID *)&m_pVerts))) {
-		m_numVerts = pMesh->GetNumVertices();
-
-		D3DXMATRIX m_rotate;
-		
-		D3DXMatrixIdentity(&m_rotate);
-		D3DXMatrixRotationYawPitchRoll(&m_rotate, -this->rotation.y, -this->rotation.z, -this->rotation.x);
-
-		D3DXVECTOR3 rotated; 
-			
-		for (int i = 0; i < m_numVerts; i++) {
-			D3DXVec3TransformCoord(&rotated, &(m_pVerts[i].norm), &m_rotate);
-			m_pVerts[i].tu = asin(rotated.x) / (2 * PI) + 0.25f;
-			m_pVerts[i].tv = asin(rotated.y) / (PI)+0.5f;
-
-		}
-		pMesh->UnlockVertexBuffer();
-	}
-}

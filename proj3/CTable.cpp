@@ -18,7 +18,7 @@ bool CTable::create(IDirect3DDevice9 * pDevice)
 bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 {
 	LPD3DXBUFFER pMaterialBuffer;
-	if (FAILED(D3DXLoadMeshFromX("rsc\\bill.x", D3DXMESH_MANAGED, pDevice, NULL, &pMaterialBuffer, NULL, &m_numMaterials, &pMesh))) 
+	if (FAILED(D3DXLoadMeshFromX("rsc\\board.x", D3DXMESH_MANAGED, pDevice, NULL, &pMaterialBuffer, NULL, &m_numMaterials, &pMesh))) 
 		return false;
 
 	D3DXMATERIAL* pMaterials = (D3DXMATERIAL*)pMaterialBuffer->GetBufferPointer();

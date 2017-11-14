@@ -16,7 +16,6 @@ CLight			light;
 CCamera			camera;
 
 
-// initialization
 bool Setup( )
 {
 	/* create components */ 
@@ -52,7 +51,6 @@ bool Setup( )
 
 	return true;
 }
-
 void Cleanup(void)
 {
 	table.destroy();
@@ -63,31 +61,56 @@ void Cleanup(void)
 }
 
 
-// timeDelta represents the time between the current image frame and the last image frame.
-// the distance of moving balls should be "velocity * timeDelta"
+bool first_hit = false;
 bool Display(float timeDelta)
 {
 	if (Device)
 	{
+		// start display
 		Device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00afafaf, 1.0f, 0);
 		Device->BeginScene();
 
-		// update component status
-		for (int i = 0; i < NUM_BALL; i++)
-			ball[i].ballUpdate(timeDelta);
-		for (int j = 0; j < NUM_BALL; j++)			
-			table.hitByInnerWall(ball[j]);
-		for (int j = 0; j < NUM_BALL; j++) 
-			table.goalIntoHole(CManager::GetInstance(), ball[j]);
-		for (int i = 0; i < NUM_BALL; i++) 
-			for (int j = i + 1; j < NUM_BALL; j++)
-				ball[i].hitBy(ball[j]);
-		
 
+		/* componenet updates start */
+		
+		// update all ball pos
+		for (int i = 0; i < NUM_BALL; i++) ball[i].ballUpdate(timeDelta);
+		// check if all ball colliding with inner wall, if any, update velocity
+		for (int i = 0; i < NUM_BALL; i++) table.hitByInnerWall(ball[i]);
+		// check if all ball intersected with hole, 
+		// if any, move ball outside of board and acknowledge manager
+		for (int i = 0; i < NUM_BALL; i++)
+		{
+			if (table.hasIntersectedWithHole(ball[i]))
+			{
+				ball->disappear();
+				CManager::GetInstance()->goal(ball[i]);
+			}
+		}
+		
+		// check if white ball intersected with another ball
+		// if any, update velocity 
+		// meanwhile, notify the manager if it was the first ball collided with white ball
+		for (int i = 1; i < NUM_BALL;i++) {
+			bool hit = ball[0].hitBy(ball[i]);
+			if (first_hit == false && hit) {
+				cout << i << endl;
+				CManager::GetInstance()->first_hit_in_turn(ball[i]);
+				first_hit = true;
+			}
+		}
+		for(int i=1;i<NUM_BALL;i++)
+			for(int j=i+1;j<NUM_BALL; j++)
+				ball[i].hitBy(ball[j]);
+
+
+		/* componenet updates done */
+		
 		// draw components
 		table.draw(Device);
-		for (int i = 0; i < NUM_BALL; i++) ball[i].draw(Device);
 		cue.draw(Device);
+		for (int i = 0; i < NUM_BALL; i++)
+			ball[i].draw(Device);
 
 
 		// draw game information text
@@ -111,6 +134,8 @@ bool Display(float timeDelta)
 		Font->DrawTextA(Sprite, manager->getTurn() == 1?"PLAYER 1 Turn": "PLAYER 2 Turn", -1, &turn_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
 		Sprite->End();
 
+
+		// end display
 		Device->EndScene( );
 		Device->Present(0, 0, 0, 0);
 		Device->SetTexture(0, NULL);
@@ -124,6 +149,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static int point_x, point_y;
 	static float saved_power, saved_theta;
 	static bool turn_over = true;
+
 	switch(msg) {
 		/*
 		case WM_CREATE:
@@ -223,6 +249,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					cue.clearIsAiming();
 					ball[WHITE_BALL].setPower(saved_power*cos(saved_theta), 0,saved_power*sin(saved_theta));
 					KillTimer(hwnd, SHOOT_TIMER_ID);
+					
 					// turn started
 					turn_over = false; 
 					SetTimer(hwnd, TURN_OVER_TIMER_ID, TURN_OVER_TIMER_PERIOD, NULL);
@@ -234,14 +261,13 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				for (i = 0; i < NUM_BALL; i++)
 					if (ball[i].getVelocity_X() != 0 || ball[i].getVelocity_Z() != 0) break;
 				
+				// all ball stopped
 				if (i == NUM_BALL) {
 					int result = CManager::GetInstance()->finishTurn();
 					KillTimer(hwnd, TURN_OVER_TIMER_ID);
 					cout << "turn finished" << endl;
 
-					if (result == )
-
-					else if (result != CManager::CONTINUE) {
+					if (result != CManager::CONTINUE) {
 						string result_str;
 						switch (result) {
 						case CManager::PLAYER1_WIN_CLEAR: 
@@ -256,7 +282,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						::MessageBox(hwnd, result_str.c_str(), "Game Over", 0);
 						exit(0);
 					}
-
+					first_hit = false;
 					turn_over = true;
 				}
 			}
