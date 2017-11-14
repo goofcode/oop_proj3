@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="d3dUtility.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CSphere.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CLight.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CCue.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CCamera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CTable.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3dUtility.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CSphere.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CLight.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CCue.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CTable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="rsc\09.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\10.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\11.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\12.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\13.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\14.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\15.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\cue.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\00.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\01.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\02.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\03.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\04.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\05.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\06.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\07.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\08.jpg">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rsc\pool_table.x">
+      <Filter>리소스 파일</Filter>
+    </None>
+  </ItemGroup>
+</Project>
