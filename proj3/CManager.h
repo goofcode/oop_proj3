@@ -19,7 +19,7 @@ private:
 	int stripe_goal_in_turn = 0;
 	bool blackball_goal_in_turn = false;
 	bool whiteball_goal_in_turn = false;
-	
+	int firsthit_in_turn = 0;
 	CManager();
 	~CManager() {};
 	CManager(const CManager& other);
@@ -44,7 +44,7 @@ public:
 	int getScore(int playernum);
 	void goal(const CSphere& ball);
 	int finishTurn();
-
+	void first_hit_in_turn(const CSphere& ball);
 private:
 
 	static CManager *Manager;

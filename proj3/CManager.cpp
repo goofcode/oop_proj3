@@ -1,6 +1,18 @@
 #include "CManager.h"
 
 CManager* CManager::Manager = nullptr;
+void CManager::first_hit_in_turn(const CSphere & ball)
+{
+	if (firsthit_in_turn == 0 && (blackball_goal_in_turn == true || ball.getBallType() == ball_type[theOther(turn)])) {
+		if (ball_type[turn] == -1)
+			firsthit_in_turn = 1;
+		else
+			firsthit_in_turn = 2;
+	}
+	else
+		firsthit_in_turn = 1;
+}
+
 
 int CManager::getBallType(int playernum)
 {
@@ -38,32 +50,39 @@ void CManager::goal(const CSphere & ball)
 
 int CManager::finishTurn()
 {
+	if (firsthit_in_turn == 0) {
+		turnover();
+		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
+		return CONTINUE;
+	}
 	if (blackball_goal_in_turn) {
 
-		if(score[turn] == 7){
+		if (score[turn] == 7) {
 			if (solid_goal_in_turn + stripe_goal_in_turn != 0)
 				return turn == PLAYER1 ? PLAYER2_WIN_BY_PLAYER1_BLACKBALL : PLAYER1_WIN_BY_PLAYER2_BLACKBALL;
 			return turn == PLAYER1 ? PLAYER1_WIN_CLEAR : PLAYER2_WIN_CLEAR;
 		}
 		else
 			return turn == PLAYER1 ? PLAYER2_WIN_BY_PLAYER1_BLACKBALL : PLAYER1_WIN_BY_PLAYER2_BLACKBALL;
-	}	
+	}
 	else if (whiteball_goal_in_turn) {
 		health[turn] --;
+		cout << health[turn];
 		if (health[turn] == 0) return turn == PLAYER1 ? PLAYER2_WIN_BY_PLAYER1_WHITEBALL : PLAYER1_WIN_BY_PLAYER2_WHITEBALL;
 
 		turnover();
-		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = 0;
+		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 		return CONTINUE;
 	}
 	// normal balls goals in turn
-	else{
+
+	else {
 		// if first goal
 		if (firstGoal && !firstGoalTurn) {
 			firstGoalTurn = true;
 			if (solid_goal_in_turn == 0 || stripe_goal_in_turn == 0) {
 				ball_type[turn] = solid_goal_in_turn != 0 ? TYPE_SOLID_BALL : TYPE_STRIPE_BALL;
-				ball_type[theOther(turn)] = solid_goal_in_turn != 0 ? TYPE_STRIPE_BALL: TYPE_SOLID_BALL ;
+				ball_type[theOther(turn)] = solid_goal_in_turn != 0 ? TYPE_STRIPE_BALL : TYPE_SOLID_BALL;
 			}
 			else {
 				// ¸¸µé¾î¾ßµÊ
@@ -73,24 +92,24 @@ int CManager::finishTurn()
 
 			updateScore(TYPE_SOLID_BALL, solid_goal_in_turn);
 			updateScore(TYPE_STRIPE_BALL, stripe_goal_in_turn);
-			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = 0;
+			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 			return CONTINUE;
 		}
 
 		// case of continue
-		else if ((solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_STRIPE_BALL)
+		else if ((firsthit_in_turn == 1) && (solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_STRIPE_BALL)
 			|| (solid_goal_in_turn != 0 && stripe_goal_in_turn == 0 && ball_type[turn] == TYPE_SOLID_BALL)
 			|| (solid_goal_in_turn != 0 && stripe_goal_in_turn != 0)) {
-			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = 0;
+			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 			return CONTINUE;
 		}
 
 		// case of turn over
 		else if ((solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_SOLID_BALL)
 			|| (solid_goal_in_turn != 0 && stripe_goal_in_turn == 0 && ball_type[turn] == TYPE_STRIPE_BALL)
-			|| (solid_goal_in_turn == 0 && stripe_goal_in_turn == 0)) {
+			|| (solid_goal_in_turn == 0 && stripe_goal_in_turn == 0) || (firsthit_in_turn == 2)) {
 			turnover();
-			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = 0;
+			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 			return CONTINUE;
 		}
 		else {
