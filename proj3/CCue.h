@@ -7,7 +7,7 @@
 #define TOP_RADIUS 0.06f
 #define BOTTOM_RADIUS 0.10f
 
-#define QUEUE_Y 0.21f
+#define QUEUE_Y 0.25f
 
 #define MAX_POWER 6.0f
 #define UNIT_POWER_CHARGE 0.1f

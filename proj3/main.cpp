@@ -58,6 +58,8 @@ void Cleanup(void)
 
 
 bool first_hit = false;
+bool freeball = false;
+
 bool Display(float timeDelta)
 {
 	if (Device)
@@ -77,28 +79,36 @@ bool Display(float timeDelta)
 		// if any, move ball outside of board and acknowledge manager
 		for (int i = 0; i < NUM_BALL; i++)
 		{
-			if (table.hasIntersectedWithHole(ball[i]))
+			if (table.hasIntersectedWithHole(ball[i])&& !freeball)
 			{
-				ball->disappear();
+				cout << "ball " << i << " in hole" << endl;
+
 				CManager::GetInstance()->goal(ball[i]);
+
+				if (i == WHITE_BALL) {
+					ball[i].setCenter(0, ball[i].getCenter().y, 0);
+					ball[i].setPower(0, 0, 0);
+				}
+				else ball[i].disappear();
 			}
 		}
 		
 		// check if white ball intersected with another ball
 		// if any, update velocity 
 		// meanwhile, notify the manager if it was the first ball collided with white ball
-		for (int i = 1; i < NUM_BALL;i++) {
-			bool hit = ball[0].hitBy(ball[i]);
-			if (first_hit == false && hit) {
-				cout << i << endl;
-				CManager::GetInstance()->first_hit_in_turn(ball[i]);
-				first_hit = true;
+		if (!freeball) {
+			for (int i = 1; i < NUM_BALL; i++) {
+				bool hit = ball[0].hitBy(ball[i]);
+				if (first_hit == false && hit) {
+					cout << "first hit(ball " << i << " ) in this turn" << endl;
+					CManager::GetInstance()->first_hit_in_turn(ball[i]);
+					first_hit = true;
+				}
 			}
 		}
 		for(int i=1;i<NUM_BALL;i++)
 			for(int j=i+1;j<NUM_BALL; j++)
 				ball[i].hitBy(ball[j]);
-
 
 		/* componenet updates done */
 		
@@ -108,13 +118,16 @@ bool Display(float timeDelta)
 			ball[i].draw(Device);
 		cue.draw(Device);
 
-
 		// draw game information text
-		CManager::GetInstance()->showGameInfo(Device);
+		CManager::GetInstance()->showGameInfo();
+		CManager::GetInstance()->showMessage();
+
+		Device->EndScene();
+		Device->Present(0, 0, 0, 0);
+		Device->SetTexture(0, NULL);
 	}
 	return true;
 }
-
 
 LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -122,34 +135,35 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static float saved_power, saved_theta;
 	static bool turn_over = true;
 
-	switch(msg) {
-		/*
-		case WM_CREATE:
-			d = CreateWindow("BUTTON", NULL, WS_CHILD | WS_VISIBLE | BS_BITMAP,
-				10, 10, 180, 180, hwnd, 200, hInstance, 0);
-			hbit = LoadBitmap(hInstance, "Bit");
-			SendMessage(d, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
-			break;
-		*/
-		// right mouse button down
-		// start aiming and set camera pos properly
+	switch (msg) {
+			/*
+			case WM_CREATE:
+				d = CreateWindow("BUTTON", NULL, WS_CHILD | WS_VISIBLE | BS_BITMAP,
+					10, 10, 180, 180, hwnd, 200, hInstance, 0);
+				hbit = LoadBitmap(hInstance, "Bit");
+				SendMessage(d, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
+				break;
+			*/
+			// right mouse button down
+			// start aiming and set camera pos properly
 		case WM_RBUTTONDOWN:
 		{
+			point_x = LOWORD(lParam);
+			point_y = HIWORD(lParam);
+
 			// if white ball is stopped
-			if(turn_over){
+			if(turn_over&& !freeball){
 				cue.setIsAiming();
-				point_x = LOWORD(lParam);
-				point_y = HIWORD(lParam);
 
 				double coor_x = (point_x - CONTENT_WIDTH / 2) * WND_TO_3D_RATIO;
 				double coor_z = (-point_y + CONTENT_HEIGHT / 2) * WND_TO_3D_RATIO;
 
 				//ready cue
-				cue.ready(coor_x, cue.getCenter( ).y, coor_z, ball[WHITE_BALL].getCenter( ));
-				
+				cue.ready(coor_x, cue.getCenter().y, coor_z, ball[WHITE_BALL].getCenter());
+
 				//move camera to center of cue
-				D3DXVECTOR3 cue_center = cue.getCenter( ) + D3DXVECTOR3(0, CUE_VIEW_Y,0);
-				camera.moveCamera(cue_center, ball[WHITE_BALL].getCenter( ));
+				D3DXVECTOR3 cue_center = cue.getCenter() + D3DXVECTOR3(0, CUE_VIEW_Y, 0);
+				camera.moveCamera(cue_center, ball[WHITE_BALL].getCenter());
 			}
 			break;
 		}
@@ -158,17 +172,25 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		// change cue angle and camera pos
 		case WM_MOUSEMOVE:
 		{
-			if(cue.getIsAiming()){
-				int dx = LOWORD(lParam) - point_x;
-				point_x = LOWORD(lParam);
-				
-				// roate cue
-				cue.rotate(dx * X_TO_THETA_RATIO);
+			int dx = LOWORD(lParam) - point_x;
+			int dy = HIWORD(lParam) - point_y;
 
-				// move camera to center of cue
-				D3DXVECTOR3 cue_center = cue.getCenter() + D3DXVECTOR3(0, CUE_VIEW_Y, 0);
-				camera.moveCamera(cue_center, ball[WHITE_BALL].getCenter( ));
+			if (!freeball) {
+				if (cue.getIsAiming()) {
+					// roate cue
+					cue.rotate(dx * X_TO_THETA_RATIO);
+					// move camera to center of cue
+					D3DXVECTOR3 cue_center = cue.getCenter() + D3DXVECTOR3(0, CUE_VIEW_Y, 0);
+					camera.moveCamera(cue_center, ball[WHITE_BALL].getCenter());
+				}
 			}
+			else {
+				double coor_x = (point_x - CONTENT_WIDTH / 2) * WND_TO_3D_RATIO;
+				double coor_z = (-point_y + CONTENT_HEIGHT / 2) * WND_TO_3D_RATIO;
+				ball[WHITE_BALL].setCenter(coor_x, M_RADIUS, coor_z);			}
+			
+			point_x = LOWORD(lParam);
+			point_y = HIWORD(lParam);
 			break;
 		}
 
@@ -177,33 +199,36 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_RBUTTONUP:
 		{
 			cue.clearIsAiming();
-			if (cue.getIsCharging()){
+			if (cue.getIsCharging()) {
 				cue.clearIsCharging();
 				cue.setPower(0);
 				KillTimer(hwnd, CHARGE_TIMER_ID);
 			}
-			camera.resetCamera( );
+			camera.resetCamera();
 			break;
 		}
 
 		// key down
 		case WM_KEYDOWN:
 		{
-			switch(wParam) {
-				// quit game
-				case VK_ESCAPE:
-					::DestroyWindow(hwnd);
-					break;
+			switch (wParam) {
+			// quit game
+			case VK_ESCAPE:
+				::DestroyWindow(hwnd);
+				break;
 
 				// space bar
 				// start 
-				case VK_SPACE:
-					if(cue.getIsAiming()&& !cue.getIsCharging()){
-						cue.setIsCharging();
-						SetTimer(hwnd, CHARGE_TIMER_ID, CHARGE_TIMER_PERIOD, NULL);
-					}
-					break;
+			case VK_SPACE:
+				if (cue.getIsAiming() && !cue.getIsCharging()) {
+					cue.setIsCharging();
+					SetTimer(hwnd, CHARGE_TIMER_ID, CHARGE_TIMER_PERIOD, NULL);
 				}
+				else if (freeball) {
+					freeball = false;
+				}
+				break;
+			}
 			break;
 		}
 
@@ -219,11 +244,11 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			else if (wParam == SHOOT_TIMER_ID) {
 				if (cue.hasIntersected(ball[WHITE_BALL])) {
 					cue.clearIsAiming();
-					ball[WHITE_BALL].setPower(saved_power*cos(saved_theta), 0,saved_power*sin(saved_theta));
+					ball[WHITE_BALL].setPower(saved_power*cos(saved_theta), 0, saved_power*sin(saved_theta));
 					KillTimer(hwnd, SHOOT_TIMER_ID);
-					
+
 					// turn started
-					turn_over = false; 
+					turn_over = false;
 					SetTimer(hwnd, TURN_OVER_TIMER_ID, TURN_OVER_TIMER_PERIOD, NULL);
 				}
 				else cue.discharge();
@@ -232,40 +257,58 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				int i;
 				for (i = 0; i < NUM_BALL; i++)
 					if (ball[i].getVelocity_X() != 0 || ball[i].getVelocity_Z() != 0) break;
-				
+
 				// all ball stopped
 				if (i == NUM_BALL) {
-					int result = CManager::GetInstance()->finishTurn();
-					KillTimer(hwnd, TURN_OVER_TIMER_ID);
-					cout << "turn finished" << endl;
+					int result = CManager::GetInstance()->finishTurn(hwnd);
+					cout << "turn finished (result code : " << result << ")"<< endl;
 
-					if (result != CManager::CONTINUE && result != CManager::FREEBALL) {
-						string result_str;
-						switch (result) {
-						case CManager::PLAYER1_WIN_CLEAR: 
-						case CManager::PLAYER1_WIN_BY_PLAYER2_BLACKBALL:
-						case CManager::PLAYER1_WIN_BY_PLAYER2_WHITEBALL:
-							result_str = "PLAYER 1 WIN"; break; 
-						case CManager::PLAYER2_WIN_CLEAR:
-						case CManager::PLAYER2_WIN_BY_PLAYER1_BLACKBALL:
-						case CManager::PLAYER2_WIN_BY_PLAYER1_WHITEBALL:
-							result_str = "PLAYER 2 WIN"; break;
-						}
-						::MessageBox(hwnd, result_str.c_str(), "Game Over", 0);
-						exit(0);
+					KillTimer(hwnd, TURN_OVER_TIMER_ID);
+
+					switch (result) {
+					case CManager::CONTINUE:
+					{
+						string message = "Turn Over -> " + to_string(CManager::GetInstance()->getTurn());
+						CManager::GetInstance()->startShowMessage(hwnd, message, 3);
+						break;
+					}
+					case CManager::FREEBALL:
+					{
+						string message = "Free Ball of " + to_string(CManager::GetInstance()->getTurn());
+						CManager::GetInstance()->startShowMessage(hwnd, message, 3);
+						freeball = true;
+						break;
+					}
+					case CManager::PLAYER1_WIN_CLEAR:
+					case CManager::PLAYER1_WIN_BY_PLAYER2_BLACKBALL:
+					case CManager::PLAYER1_WIN_BY_PLAYER2_WHITEBALL:
+						MessageBox(hwnd, "Payer 1 Win", "Game Over", 0);
+						PostQuitMessage(0);
+						break;
+					case CManager::PLAYER2_WIN_CLEAR:
+					case CManager::PLAYER2_WIN_BY_PLAYER1_BLACKBALL:
+					case CManager::PLAYER2_WIN_BY_PLAYER1_WHITEBALL:
+						MessageBox(hwnd, "Payer 2 Win", "Game Over", 0);
+						PostQuitMessage(0);
+						break;
 					}
 					first_hit = false;
 					turn_over = true;
 				}
 			}
+			else if (wParam == SHOW_MESSAGE_TIMER_ID) {
+				CManager::GetInstance()->clearMessageShow();
+				KillTimer(hwnd, SHOW_MESSAGE_TIMER_ID);
+			}
+
 			break;
 		}
 
 		case WM_KEYUP:
 		{
 			// shooting
-			if(wParam == VK_SPACE){
-				if(cue.getIsAiming() && cue.getIsCharging()){
+			if (wParam == VK_SPACE) {
+				if (cue.getIsAiming() && cue.getIsCharging()) {
 					// kill charge timer
 					KillTimer(hwnd, CHARGE_TIMER_ID);
 
@@ -283,7 +326,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 
 		case WM_DESTROY:
-			::PostQuitMessage(0);
+			PostQuitMessage(0);
 			break;
 	}
 
@@ -297,7 +340,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	AllocConsole( );
 	freopen("CONOUT$", "wt", stdout);
-	printf("start\n");
+	//printf("start\n");
 	
 	if(!d3d::InitD3D(hinstance, WINDOW_WIDTH, WINDOW_HEIGHT, true, D3DDEVTYPE_HAL, &Device)){
 		::MessageBox(0, "InitD3D() - FAILED", 0, 0);

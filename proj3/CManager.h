@@ -5,6 +5,8 @@
 #define PLAYER1 0
 #define PLAYER2 1
 
+#define SHOW_MESSAGE_TIMER_ID 4
+
 
 class CManager
 {
@@ -20,14 +22,7 @@ private:
 	bool blackball_goal_in_turn = false;
 	bool whiteball_goal_in_turn = false;
 	int firsthit_in_turn = 0;
-	CManager();
-	~CManager() {};
-	CManager(const CManager& other);
-	ID3DXFont* Font;
-	ID3DXSprite* Sprite;
 	
-	
-
 public:
 	static CManager* GetInstance() {
 		if (Manager == NULL) Manager = new CManager();
@@ -47,15 +42,34 @@ public:
 	int getBallType(int playernum);
 	int getTurn(); 
 	int getScore(int playernum);
+
+
 	void goal(const CSphere& ball);
-	int finishTurn();
+	int finishTurn(HWND hwnd);
 	void first_hit_in_turn(const CSphere& ball);
-	void showMessage(IDirect3DDevice9* Device, int seconds, string message);
-	void showGameInfo(IDirect3DDevice9* Device);
+	
 	void createFont(IDirect3DDevice9* Device);
+	void showMessage();
+	void showGameInfo();
+
+	void startShowMessage(HWND hwnd, string message, int second);
+
+	void clearMessageShow();
+
 private:
 
 	static CManager *Manager;
+
+	ID3DXSprite*	Sprite;
+	ID3DXFont*		infoFont;
+	ID3DXFont*		messageFont;
+
+	bool			message_show;
+	string			message;
+
+	CManager();
+	~CManager() {};
+	CManager(const CManager& other);
 
 	int theOther(int turn);
 	void turnover();

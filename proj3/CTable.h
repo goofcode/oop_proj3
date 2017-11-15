@@ -30,7 +30,6 @@ public:
 	bool hasIntersectedWithInnerWall(CSphere& ball);
 	bool hasIntersectedWithHole(CSphere& ball);
 	void hitByInnerWall(CSphere& ball);
-	void goalIntoHole(CManager* manager, CSphere& ball);
 
 
 private:

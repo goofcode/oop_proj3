@@ -1,7 +1,9 @@
 #include "CSphere.h"
+#include "CTable.h"
 
 bool CSphere::isColliding[NUM_BALL][NUM_BALL] = { false, };
-int CSphere::goaled_ball = 0;
+int CSphere::goaled_solid = 0;
+int CSphere::goaled_stripe = 0;
 
 CSphere::CSphere(void) {
 	radius = M_RADIUS;
@@ -87,9 +89,13 @@ bool CSphere::hitBy(CSphere& ball)
 	else if (!hasIntersected(ball)) { clearColliding(this->id, ball.getID()); return false; }
 }
 
+
 void CSphere::disappear()
 {
-	this->setCenter(-4.0f + 0.3f*goaled_ball, 0.0f, -4.0f);
+	if(getBallType() == TYPE_SOLID_BALL)
+		this->setCenter(LEFT_BOUND + (2*M_RADIUS+0.1f)*(goaled_solid++), 0.0f, -4.0f);
+	if(getBallType() == TYPE_STRIPE_BALL)
+		this->setCenter(RIGHT_BOUND - (2 * M_RADIUS + 0.1f)*(goaled_stripe ++), 0.0f, -4.0f);
 	this->setPower(0, 0, 0);
 }
 

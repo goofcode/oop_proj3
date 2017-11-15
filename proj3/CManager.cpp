@@ -1,6 +1,8 @@
 #include "CManager.h"
 
+
 CManager* CManager::Manager = nullptr;
+
 void CManager::first_hit_in_turn(const CSphere & ball)
 {
 	if (firsthit_in_turn == 0 && (blackball_goal_in_turn == true || ball.getBallType() == ball_type[theOther(turn)])) {
@@ -13,42 +15,62 @@ void CManager::first_hit_in_turn(const CSphere & ball)
 		firsthit_in_turn = 1;
 }
 
-void CManager::showMessage(IDirect3DDevice9* Device, int seconds, string message)
+void CManager::showMessage()
 {
-	
+	if (message_show) {
+		if (Sprite) Sprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
 
+		RECT message_rect = {300, 300, CONTENT_WIDTH, CONTENT_HEIGHT};
+		messageFont->DrawTextA(Sprite, message.c_str(), -1, &message_rect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
+		Sprite->End();
+	}
 }
 
-void CManager::showGameInfo(IDirect3DDevice9 * Device)
+void CManager::showGameInfo()
 {
 	
 	if (Sprite) Sprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
 
 	RECT score_rect[2] = { { 0,0,0,0 },{ 0, 30, 0, 0 } },
 		ball_type_rect[2] = { { 900, 0, 0,0 },{ 900, 30, 0, 0 } },
-		turn_rect = { 600,0,0,0 };
+		turn_rect = { 600,0,0,0 }, 
+		health_rect = { 600,30,0,0 };
 
 	for (int i = 0; i < 2; i++)
 	{
 		ostringstream sstream;
 		sstream << "Player " << i + 1 << ": " << getScore(i + 1) << " ball(s)";
-		Font->DrawTextA(Sprite, sstream.str().c_str(), -1, &score_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+		infoFont->DrawTextA(Sprite, sstream.str().c_str(), -1, &score_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
 
 		int ball_type = getBallType(i + 1);
 		if (ball_type != -1)
-			Font->DrawTextA(Sprite, (ball_type == TYPE_SOLID_BALL ? "SOLID" : "STRIPE"), -1, &ball_type_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+			infoFont->DrawTextA(Sprite, (ball_type == TYPE_SOLID_BALL ? "SOLID" : "STRIPE"), -1, &ball_type_rect[i], DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
 	}
-	Font->DrawTextA(Sprite, getTurn() == 1 ? "PLAYER 1 Turn" : "PLAYER 2 Turn", -1, &turn_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+	infoFont->DrawTextA(Sprite, getTurn() == 1 ? "PLAYER 1 Turn" : "PLAYER 2 Turn", -1, &turn_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+	ostringstream sstream;
+	sstream << "Player " << turn + 1 << "'s heath " << ": " << health[turn];
+	infoFont->DrawTextA(Sprite, sstream.str().c_str(), -1, &health_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+
 	Sprite->End();
 
-	Device->EndScene();
-	Device->Present(0, 0, 0, 0);
-	Device->SetTexture(0, NULL);
+}
+
+void CManager::startShowMessage(HWND hwnd, string message, int second)
+{
+	this->message = message;
+	message_show = true;
+	SetTimer(hwnd, SHOW_MESSAGE_TIMER_ID, second*1000, NULL);
+}
+
+void CManager::clearMessageShow()
+{
+	message_show = false;
 }
 
 void CManager::createFont(IDirect3DDevice9 * Device)
 {
-	D3DXCreateFont(Device, 25, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("굴림체"), &Font);
+	D3DXCreateFont(Device, 25, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("굴림체"), &infoFont);
+	D3DXCreateFont(Device, 60, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("굴림체"), &messageFont);
 	D3DXCreateSprite(Device, &Sprite);
 }
 
@@ -89,13 +111,8 @@ void CManager::goal(const CSphere & ball)
 	}
 }
 
-int CManager::finishTurn()
+int CManager::finishTurn(HWND hwnd)
 {
-	if ((firsthit_in_turn == 0)|| (firsthit_in_turn == 2)) {
-		turnover();
-		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
-		return FREEBALL;
-	}
 	if (blackball_goal_in_turn) {
 
 		if (score[turn] == 7) {
@@ -107,10 +124,15 @@ int CManager::finishTurn()
 			return turn == PLAYER1 ? PLAYER2_WIN_BY_PLAYER1_BLACKBALL : PLAYER1_WIN_BY_PLAYER2_BLACKBALL;
 	}
 	else if (whiteball_goal_in_turn) {
+
 		health[turn] --;
-		cout << health[turn];
 		if (health[turn] == 0) return turn == PLAYER1 ? PLAYER2_WIN_BY_PLAYER1_WHITEBALL : PLAYER1_WIN_BY_PLAYER2_WHITEBALL;
 
+		turnover();
+		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
+		return FREEBALL;
+	}
+	else if ((firsthit_in_turn == 0) || (firsthit_in_turn == 2)) {
 		turnover();
 		solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 		return FREEBALL;
@@ -126,9 +148,15 @@ int CManager::finishTurn()
 				ball_type[theOther(turn)] = solid_goal_in_turn != 0 ? TYPE_STRIPE_BALL : TYPE_SOLID_BALL;
 			}
 			else {
-				// 만들어야됨
-				ball_type[turn] = TYPE_SOLID_BALL;
-				ball_type[theOther(turn)] = TYPE_STRIPE_BALL;
+				int answer = MessageBox(hwnd, "색공을 사용하시려면 '예'를\n 띠공을 사용하시려면 '아니오'를 눌러주세요", "공 선택", MB_YESNO);
+				if ( answer== IDYES) {
+					ball_type[turn] = TYPE_SOLID_BALL;
+					ball_type[theOther(turn)] = TYPE_STRIPE_BALL;
+				}
+				else {
+					ball_type[turn] = TYPE_STRIPE_BALL;
+					ball_type[theOther(turn)] = TYPE_SOLID_BALL;
+				}
 			}
 
 			updateScore(TYPE_SOLID_BALL, solid_goal_in_turn);

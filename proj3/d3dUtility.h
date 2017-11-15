@@ -8,7 +8,6 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-//#define INFINITY FLT_MAX
 
 
 #define EPSILON 0.01f
@@ -22,7 +21,7 @@
 #define CONTENT_WIDTH 1007
 #define CONTENT_HEIGHT 729
 
-#define WND_TO_3D_RATIO 0.01064f
+#define WND_TO_3D_RATIO 0.013f
 #define X_TO_THETA_RATIO 0.01f
 
 

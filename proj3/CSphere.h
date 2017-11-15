@@ -24,12 +24,12 @@ typedef struct SPHERE_VERTEX
 	float tv;
 } SVERTEX, *LPSVERTEX;
 
-const float ball_pos[16][3] = { { -1.20f, M_RADIUS, 0.00f },{ 1.20f, M_RADIUS, 0.00f },{ 1.58f, M_RADIUS, 0.22f },
-{ 1.58f, M_RADIUS, -0.22f },{ 1.97f, M_RADIUS, 0.44f },{ 1.97f, M_RADIUS, 0.00f },
-{ 1.97f, M_RADIUS, -0.44f },{ 2.35f, M_RADIUS, 0.66f },{ 2.35f, M_RADIUS, 0.22f },
-{ 2.35f, M_RADIUS, -0.22f },{ 2.35f, M_RADIUS, -0.66f },{ 2.74f, M_RADIUS, 0.88f },
-{ 2.74f, M_RADIUS, 0.44f },{ 2.74f, M_RADIUS, 0.00f },{ 2.74f, M_RADIUS, -0.44f },
-{ 2.74f, M_RADIUS, -0.88f } };
+const float ball_pos[16][3] = { { -1.70f, M_RADIUS, 0.00f },
+{ 2.20f, M_RADIUS, 0.00f },{ 2.58f, M_RADIUS, 0.22f },{ 2.58f, M_RADIUS, -0.22f },
+{ 2.97f, M_RADIUS, 0.44f },{ 2.97f, M_RADIUS, 0.00f },{ 2.97f, M_RADIUS, -0.44f },
+{ 3.35f, M_RADIUS, 0.66f },{ 3.35f, M_RADIUS, 0.22f },{ 3.35f, M_RADIUS, -0.22f },
+{ 3.35f, M_RADIUS, -0.66f },{ 3.74f, M_RADIUS, 0.88f },{ 3.74f, M_RADIUS, 0.44f },
+{ 3.74f, M_RADIUS, 0.00f },{ 3.74f, M_RADIUS, -0.44f },{ 3.74f, M_RADIUS, -0.88f } };
 
 class CSphere {
 
@@ -41,7 +41,8 @@ private:
 	D3DXVECTOR3			rotation;
 
 	static bool			isColliding[NUM_BALL][NUM_BALL];
-	static int			goaled_ball;
+	static int			goaled_solid;
+	static int			goaled_stripe;
 
 public:
 	CSphere(void);

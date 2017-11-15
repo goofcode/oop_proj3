@@ -103,20 +103,13 @@ bool CTable::hasIntersectedWithHole(CSphere & ball)
 		for (int j = 0; j < 3; j++) {
 			if (distance(cx, cz, hole_cx, hole_cz) < HOLE_RADIUS  + GOAL_EPSILON)
 				return true;
+
 			hole_cx += TABLE_WIDTH / 2;
 		}
 		hole_cz -= TABLE_DEPTH;
 	}
 
 	return false;
-}
-void CTable::goalIntoHole(CManager* manager, CSphere & ball)
-{
-	if (hasIntersectedWithHole(ball)) {
-		cout << "inter" << endl;
-		ball.disappear();
-		manager->goal(ball);
-	}
 }
 
 void CTable::draw(IDirect3DDevice9 * pDevice)
