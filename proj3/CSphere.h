@@ -24,12 +24,13 @@ typedef struct SPHERE_VERTEX
 	float tv;
 } SVERTEX, *LPSVERTEX;
 
-const float ball_pos[16][3] = { { -1.70f, M_RADIUS, 0.00f },
-{ 2.20f, M_RADIUS, 0.00f },{ 2.58f, M_RADIUS, 0.22f },{ 2.58f, M_RADIUS, -0.22f },
-{ 2.97f, M_RADIUS, 0.44f },{ 2.97f, M_RADIUS, 0.00f },{ 2.97f, M_RADIUS, -0.44f },
-{ 3.35f, M_RADIUS, 0.66f },{ 3.35f, M_RADIUS, 0.22f },{ 3.35f, M_RADIUS, -0.22f },
-{ 3.35f, M_RADIUS, -0.66f },{ 3.74f, M_RADIUS, 0.88f },{ 3.74f, M_RADIUS, 0.44f },
-{ 3.74f, M_RADIUS, 0.00f },{ 3.74f, M_RADIUS, -0.44f },{ 3.74f, M_RADIUS, -0.88f } };
+const float ball_pos[16][3] = { { -3.70f, M_RADIUS, 0.00f },
+{ 2.70f, M_RADIUS, 0.00f },{ 4.24f, M_RADIUS, 0.44f },{ 3.85f, M_RADIUS, 0.22f },
+{ 3.47f, M_RADIUS, -0.44f },{ 4.24f, M_RADIUS, -0.88f },{ 3.47f, M_RADIUS, 0.44f },
+{ 4.24f, M_RADIUS, 0.00f },{ 3.47f, M_RADIUS, 0.00f },{ 3.85f, M_RADIUS, 0.66f },
+{ 3.08f, M_RADIUS, -0.22f },{ 4.24f, M_RADIUS, -0.44f },{ 4.24f, M_RADIUS, 0.88f },
+{ 3.08f, M_RADIUS, 0.22f },{ 3.85f, M_RADIUS, -0.22f },{ 3.85f, M_RADIUS, -0.66f } };
+
 
 class CSphere {
 
