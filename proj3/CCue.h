@@ -70,10 +70,12 @@ public:
 
 private:
 	void initState();
+	void loadMaterial();
 	bool loadModel(IDirect3DDevice9 * pDevice);
 	bool getTexture(IDirect3DDevice9 * pDevice);
 
 	D3DXMATRIX				mWorld;
+	D3DMATERIAL9            mMtrl;
 	LPCVERTEX				m_pVerts;
 	LPDIRECT3DVERTEXBUFFER9 pVB;
 	LPDIRECT3DTEXTURE9      m_pTexture;

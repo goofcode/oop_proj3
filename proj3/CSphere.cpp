@@ -187,11 +187,11 @@ void CSphere::initState(int id, const float pos[3])
 void CSphere::loadMaterial()
 {
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
-	this->mMtrl.Ambient = d3d::WHITE * 0.5f;
-	this->mMtrl.Diffuse = d3d::WHITE * 0.2f;
-	this->mMtrl.Specular = d3d::WHITE * 0.6f;
+	this->mMtrl.Ambient = d3d::WHITE * 0.3f;
+	this->mMtrl.Diffuse = d3d::WHITE * 0.8f;
+	this->mMtrl.Specular = d3d::WHITE * 0.4f;
 	this->mMtrl.Emissive = d3d::WHITE*0.5f;
-	this->mMtrl.Power = 3.0f;
+	this->mMtrl.Power = 40.0f;
 }
 
 bool CSphere::getMesh(IDirect3DDevice9 * pDevice)

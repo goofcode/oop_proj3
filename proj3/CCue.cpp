@@ -11,6 +11,7 @@ bool CCue::create(IDirect3DDevice9* pDevice)
 
 	initState();
 	if (loadModel(pDevice) == false) return false;
+	loadMaterial();
 	if (getTexture(pDevice) == false) return false;
 
 	return true;
@@ -111,10 +112,18 @@ bool CCue::loadModel(IDirect3DDevice9 * pDevice)
 	pVB->Unlock();
 	return true;
 }
-
+void CCue::loadMaterial()
+{
+	ZeroMemory(&mMtrl, sizeof(mMtrl));
+	this->mMtrl.Ambient = d3d::WHITE * 0.8f;
+	//this->mMtrl.Diffuse = d3d::WHITE * 0.9f;
+	this->mMtrl.Specular = d3d::WHITE * 0.8f;
+	this->mMtrl.Emissive = d3d::WHITE*0.7f;
+	this->mMtrl.Power = 50.0f;
+}
 bool CCue::getTexture(IDirect3DDevice9 * pDevice)
 {
-	if (FAILED(D3DXCreateTextureFromFile(pDevice, "rsc\\cue.jpg", &m_pTexture))) return false;
+	if (FAILED(D3DXCreateTextureFromFile(pDevice, "rsc\\cue.png", &m_pTexture))) return false;
 	return true;
 }
 
