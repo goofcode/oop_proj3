@@ -38,7 +38,7 @@ void CManager::showGameInfo()
 
 	// print health info
 	ostringstream sstream;
-	sstream << "Player " << turn + 1 << "'s heath " << ": " << health[turn];
+	sstream << "Player " << turn + 1 << "'s health " << ": " << health[turn];
 	infoFont->DrawTextA(Sprite, sstream.str().c_str(), -1, &health_rect, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
 
 	Sprite->End();

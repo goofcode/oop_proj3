@@ -32,6 +32,9 @@ bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 		m_pMeshMaterials[i].Ambient = d3d::WHITE;
 		m_pMeshMaterials[i].Diffuse = d3d::WHITE;
 
+		if(i==3) m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.3f;
+		else m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.2f;
+
 		string texture_file;
 		switch (i) {
 		case 1: texture_file = "rsc\\cherry.jpg"; break;

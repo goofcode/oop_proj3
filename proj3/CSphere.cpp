@@ -117,7 +117,7 @@ void CSphere::ballUpdate(float timeDiff)
 			center.z + TIME_SCALE*timeDiff*vz);
 
 		rotation.z += vx * POWER_TO_ANGLE;
-		rotation.x += vz * POWER_TO_ANGLE;
+		rotation.x += -vz * POWER_TO_ANGLE;
 	}
 	else { this->setPower(0, 0, 0); }
 
@@ -220,7 +220,7 @@ void CSphere::mapTexture()
 		D3DXMATRIX m_rotate;
 
 		D3DXMatrixIdentity(&m_rotate);
-		D3DXMatrixRotationYawPitchRoll(&m_rotate, -this->rotation.y, -this->rotation.z, -this->rotation.x);
+		D3DXMatrixRotationYawPitchRoll(&m_rotate, this->rotation.y, this->rotation.x, this->rotation.z);
 
 		D3DXVECTOR3 rotated;
 
@@ -228,7 +228,6 @@ void CSphere::mapTexture()
 			D3DXVec3TransformCoord(&rotated, &(m_pVerts[i].norm), &m_rotate);
 			m_pVerts[i].tu = asin(rotated.x) / (2 * PI) + 0.25f;
 			m_pVerts[i].tv = asin(rotated.y) / (PI)+0.5f;
-
 		}
 		pMesh->UnlockVertexBuffer();
 	}

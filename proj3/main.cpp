@@ -70,7 +70,6 @@ bool Display(float timeDelta)
 
 
 		/* componenet updates start */
-		
 		// update all ball pos
 		for (int i = 0; i < NUM_BALL; i++) ball[i].ballUpdate(timeDelta);
 		// check if all ball colliding with inner wall, if any, update velocity

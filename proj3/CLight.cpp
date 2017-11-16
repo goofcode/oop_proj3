@@ -21,7 +21,7 @@ bool CLight::create(IDirect3DDevice9* pDevice)
 	m_lit.Diffuse = d3d::WHITE;
 	m_lit.Specular = d3d::WHITE * 0.9f;
 	m_lit.Ambient = d3d::WHITE * 0.9f;
-	m_lit.Position = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+	m_lit.Position = D3DXVECTOR3(0.0f, 2.0f, 0.0f);
 	m_lit.Range = 100.0f;
 	m_lit.Attenuation0 = 0.0f;
 	m_lit.Attenuation1 = 0.9f;
