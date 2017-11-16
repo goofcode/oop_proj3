@@ -19,7 +19,7 @@ bool Setup( )
 {
 	/* create components */ 
 	cout << "creating table" << endl;
-	if (table.create(Device) == false) return false;
+	if (table.create(Device) == false) return false; 
 	cout << "creating balls" << endl;
 	for (int i = 0; i < NUM_BALL; i++) 
 		if (ball[i].create(Device, i, ball_pos[i]) == false) return false;
@@ -28,7 +28,7 @@ bool Setup( )
 	cout << "creating light" << endl;
 	if(false == light.create(Device)) return false;
 	light.setLight(Device);
-	cout << "creating camera" << endl;
+	cout << "creating camera" << endl << endl;
 	if(camera.create(Device)== false) return false;
 	/* create components */
 
@@ -136,16 +136,6 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool turn_over = true;
 
 	switch (msg) {
-			/*
-			case WM_CREATE:
-				d = CreateWindow("BUTTON", NULL, WS_CHILD | WS_VISIBLE | BS_BITMAP,
-					10, 10, 180, 180, hwnd, 200, hInstance, 0);
-				hbit = LoadBitmap(hInstance, "Bit");
-				SendMessage(d, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
-				break;
-			*/
-			// right mouse button down
-			// start aiming and set camera pos properly
 		case WM_RBUTTONDOWN:
 		{
 			point_x = LOWORD(lParam);
@@ -187,7 +177,8 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			else {
 				double coor_x = (point_x - CONTENT_WIDTH / 2) * WND_TO_3D_RATIO;
 				double coor_z = (-point_y + CONTENT_HEIGHT / 2) * WND_TO_3D_RATIO;
-				ball[WHITE_BALL].setCenter(coor_x, M_RADIUS, coor_z);			}
+				ball[WHITE_BALL].setCenter(coor_x, M_RADIUS, coor_z);
+			}
 			
 			point_x = LOWORD(lParam);
 			point_y = HIWORD(lParam);
@@ -243,6 +234,7 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 			else if (wParam == SHOOT_TIMER_ID) {
 				if (cue.hasIntersected(ball[WHITE_BALL])) {
+					cout << "Hit Power: " << saved_power << " Theta: " << saved_theta << endl;;
 					cue.clearIsAiming();
 					ball[WHITE_BALL].setPower(saved_power*cos(saved_theta), 0, saved_power*sin(saved_theta));
 					KillTimer(hwnd, SHOOT_TIMER_ID);
@@ -261,20 +253,20 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				// all ball stopped
 				if (i == NUM_BALL) {
 					int result = CManager::GetInstance()->finishTurn(hwnd);
-					cout << "turn finished (result code : " << result << ")"<< endl;
+					cout << "turn finished (result code : " << result << ")"<< endl <<endl;
 
 					KillTimer(hwnd, TURN_OVER_TIMER_ID);
 
 					switch (result) {
 					case CManager::CONTINUE:
 					{
-						string message = "Turn Over -> " + to_string(CManager::GetInstance()->getTurn());
+						string message = "PLAYER " + to_string(CManager::GetInstance()->getTurn());
 						CManager::GetInstance()->startShowMessage(hwnd, message, 3);
 						break;
 					}
 					case CManager::FREEBALL:
 					{
-						string message = "Free Ball of " + to_string(CManager::GetInstance()->getTurn());
+						string message = "Free Ball\nPlayer " + to_string(CManager::GetInstance()->getTurn());
 						CManager::GetInstance()->startShowMessage(hwnd, message, 3);
 						freeball = true;
 						break;

@@ -12,7 +12,7 @@
 #define DOWN_BOUND		-TABLE_DEPTH/2
 
 #define HOLE_RADIUS		0.22f
-#define GOAL_EPSILON	0.03f
+#define GOAL_EPSILON	0.05f
 
 
 class CTable{

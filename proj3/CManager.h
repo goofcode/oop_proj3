@@ -5,6 +5,10 @@
 #define PLAYER1 0
 #define PLAYER2 1
 
+#define NOHIT 0
+#define RIGHTBALL 1
+#define BLACK_OR_OTHER 2
+
 #define SHOW_MESSAGE_TIMER_ID 4
 
 
@@ -75,5 +79,3 @@ private:
 	void turnover();
 	void updateScore(int balltype, int num =1);
 };
-
-
