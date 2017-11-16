@@ -85,22 +85,31 @@ int CManager::getScore(int playernum)
 
 void CManager::first_hit_in_turn(const CSphere & ball)
 {
-	// if hit black ball in the first time
-	if (ball.getBallType() == TYPE_BLACK_BALL) {
-		firsthit_in_turn = BLACK_OR_OTHER; 
-		return;
-	}
+	if (score[turn] != 7) {
+		// if hit black ball in the first time
+		if (ball.getBallType() == TYPE_BLACK_BALL) {
+			firsthit_in_turn = BLACK_OR_OTHER;
+			return;
+		}
 
-	// if ball type is determined
-	if (ball_type[turn] != -1) {
-		firsthit_in_turn = (ball.getBallType() == ball_type[turn]) ? RIGHTBALL : BLACK_OR_OTHER;
-		  return;
+		// if ball type is determined
+		if (ball_type[turn] != -1) {
+			firsthit_in_turn = (ball.getBallType() == ball_type[turn]) ? RIGHTBALL : BLACK_OR_OTHER;
+			return;
+		}
+		// if not determined
+		else {
+			firsthit_in_turn = RIGHTBALL;
+			return;
+		}
 	}
-	// if not determined
+	else if ((ball.getBallType() != ball_type[turn])&& ball.getBallType()!=TYPE_BLACK_BALL) {
+		firsthit_in_turn = BLACK_OR_OTHER;
+	}
 	else {
 		firsthit_in_turn = RIGHTBALL;
-		return;
 	}
+	
 }
 
 //처음 들어갔을 때 볼 타입 결정 두개이상 동시시 스코어계산때 체크박스 띄울 예정
@@ -183,12 +192,16 @@ int CManager::finishTurn(HWND hwnd)
 		}
 
 		// case of turn over
-		else if ((firsthit_in_turn == 1) && (solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_SOLID_BALL)
-			|| (solid_goal_in_turn != 0 && stripe_goal_in_turn == 0 && ball_type[turn] == TYPE_STRIPE_BALL)
-			|| (solid_goal_in_turn == 0 && stripe_goal_in_turn == 0)) {
+		else if ((firsthit_in_turn == 1) && (solid_goal_in_turn == 0 && stripe_goal_in_turn == 0)) {
 			turnover();
 			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
 			return CONTINUE;
+		}
+		else if ((firsthit_in_turn == 1) && ((solid_goal_in_turn == 0 && stripe_goal_in_turn != 0 && ball_type[turn] == TYPE_SOLID_BALL)
+			|| (solid_goal_in_turn != 0 && stripe_goal_in_turn == 0 && ball_type[turn] == TYPE_STRIPE_BALL))) {
+			turnover();
+			solid_goal_in_turn = stripe_goal_in_turn = whiteball_goal_in_turn = firsthit_in_turn = 0;
+			return FREEBALL;
 		}
 		else {
 			cout << "Please check calculate_score() logic " << endl;
