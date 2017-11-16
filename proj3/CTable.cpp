@@ -28,18 +28,36 @@ bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 	
 	for (DWORD i = 0; i < m_numMaterials; i++)
 	{
-		m_pMeshMaterials[i] = pMaterials[i].MatD3D;
-		m_pMeshMaterials[i].Ambient = d3d::WHITE;
-		m_pMeshMaterials[i].Diffuse = d3d::WHITE;
-
-		if(i==3) m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.3f;
-		else m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.2f;
-
 		string texture_file;
+		
+		m_pMeshMaterials[i] = pMaterials[i].MatD3D;
+		m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse;
+		//m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.2f;
+
 		switch (i) {
-		case 1: texture_file = "rsc\\cherry.jpg"; break;
-		case 3: texture_file = "rsc\\green.jpg"; break;
-		default: texture_file = "";  break;
+			// outer wall
+			case 1: 
+				texture_file = "rsc\\wood.png";
+				break;
+			// ground 
+			case 3:
+				m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse = d3d::WHITE;
+				texture_file = "rsc\\green.png";
+				break;
+			// outside of hole
+			case 4:
+				ZeroMemory(&m_pMeshMaterials[i], sizeof(D3DMATERIAL9));
+				m_pMeshMaterials[i].Diffuse = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+				m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse;
+				texture_file = "rsc\\hole.png";
+				break;
+			// inner of hole
+			case 5:
+				texture_file = "rsc\\hole.png";
+				break;
+
+			default:
+				break;
 		}
 
 		if (texture_file != "") {

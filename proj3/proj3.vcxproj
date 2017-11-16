@@ -182,9 +182,10 @@
     <Image Include="rsc\8.jpg" />
     <Image Include="rsc\9.jpg" />
     <Image Include="rsc\cue.jpg" />
+    <Image Include="rsc\green.png" />
+    <Image Include="rsc\hole.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="rsc\ball.x" />
     <None Include="rsc\board.x" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

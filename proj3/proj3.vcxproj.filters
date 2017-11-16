@@ -118,12 +118,15 @@
     <Image Include="rsc\0.jpg">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="rsc\hole.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\green.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsc\board.x">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="rsc\ball.x">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>

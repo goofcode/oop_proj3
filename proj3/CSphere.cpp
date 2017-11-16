@@ -187,17 +187,17 @@ void CSphere::initState(int id, const float pos[3])
 void CSphere::loadMaterial()
 {
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
-	this->mMtrl.Ambient = d3d::WHITE;
-	this->mMtrl.Diffuse = d3d::WHITE;
-	this->mMtrl.Specular = d3d::WHITE;
-	this->mMtrl.Emissive = d3d::WHITE;
-	this->mMtrl.Power = 5.0f;
+	this->mMtrl.Ambient = d3d::WHITE * 0.5f;
+	this->mMtrl.Diffuse = d3d::WHITE * 0.2f;
+	this->mMtrl.Specular = d3d::WHITE * 0.6f;
+	this->mMtrl.Emissive = d3d::WHITE*0.5f;
+	this->mMtrl.Power = 3.0f;
 }
 
 bool CSphere::getMesh(IDirect3DDevice9 * pDevice)
 {
 	LPD3DXMESH tmpMesh;
-	if (FAILED(D3DXCreateSphere(pDevice, getRadius(), 50, 50, &tmpMesh, NULL)))  return false;
+	if (FAILED(D3DXCreateSphere(pDevice, getRadius(), 20, 20, &tmpMesh, NULL)))  return false;
 	if (FAILED(tmpMesh->CloneMeshFVF(D3DXMESH_SYSTEMMEM, FVF_SPHERE_VERTEX, pDevice, &pMesh))) return false;
 	tmpMesh->Release();
 	return true;

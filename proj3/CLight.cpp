@@ -17,18 +17,18 @@ bool CLight::create(IDirect3DDevice9* pDevice)
 		return false;
 
 	::ZeroMemory(&m_lit, sizeof(m_lit));
-	m_lit.Type = D3DLIGHT_POINT;
+	m_lit.Type = D3DLIGHT_SPOT;
 	m_lit.Diffuse = d3d::WHITE;
 	m_lit.Specular = d3d::WHITE * 0.9f;
 	m_lit.Ambient = d3d::WHITE * 0.9f;
-	m_lit.Position = D3DXVECTOR3(0.0f, 2.0f, 0.0f);
-	m_lit.Range = 100.0f;
+	m_lit.Position = D3DXVECTOR3(0.0f, 4.0f, 0.0f);
+	m_lit.Range = 200.0f;
 	m_lit.Attenuation0 = 0.0f;
-	m_lit.Attenuation1 = 0.9f;
+	m_lit.Attenuation1 = 0.3f;
 	m_lit.Attenuation2 = 0.0f;
 
 	m_bound._center = m_lit.Position;
-	m_bound._radius = 0.01f;
+	m_bound._radius = 0.2f;
 	return true;
 }
 void CLight::destroy(void)
