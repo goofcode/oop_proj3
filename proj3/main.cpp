@@ -270,16 +270,29 @@ LRESULT CALLBACK d3d::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 						freeball = true;
 						break;
 					}
+					// win condition to message
 					case CManager::PLAYER1_WIN_CLEAR:
+						MessageBox(hwnd, "Payer 1 Win by clear!", "Game Over", 0);
+						PostQuitMessage(0);
+						break;
 					case CManager::PLAYER1_WIN_BY_PLAYER2_BLACKBALL:
+						MessageBox(hwnd, "Payer 1 Win by Player 2's black ball!", "Game Over", 0);
+						PostQuitMessage(0);
+						break;
 					case CManager::PLAYER1_WIN_BY_PLAYER2_WHITEBALL:
-						MessageBox(hwnd, "Payer 1 Win", "Game Over", 0);
+						MessageBox(hwnd, "Payer 1 Win by Player 2's health zero!", "Game Over", 0);
 						PostQuitMessage(0);
 						break;
 					case CManager::PLAYER2_WIN_CLEAR:
+						MessageBox(hwnd, "Payer 2 Win by clear!", "Game Over", 0);
+						PostQuitMessage(0);
+						break;
 					case CManager::PLAYER2_WIN_BY_PLAYER1_BLACKBALL:
+						MessageBox(hwnd, "Payer 2 Win by Player 1's black ball!", "Game Over", 0);
+						PostQuitMessage(0);
+						break;
 					case CManager::PLAYER2_WIN_BY_PLAYER1_WHITEBALL:
-						MessageBox(hwnd, "Payer 2 Win", "Game Over", 0);
+						MessageBox(hwnd, "Payer 2 Win by Player 1's health zero!", "Game Over", 0);
 						PostQuitMessage(0);
 						break;
 					}
