@@ -109,7 +109,7 @@ int EnterMsgLoop(void (*update)(float timeDelta), void (*display)())
 		else
 		{
 			if (Device) {
-				update(0.02f);
+				update(0.01f * TIME_CORRECTION_RATIO);
 				display();
 			}
 		}
