@@ -100,7 +100,8 @@ void CTable::hitByInnerWall(CSphere & ball)
 		float vz = ball.getVelocity_Z();
 
 		if (rx >= RIGHT_BOUND || lx <= LEFT_BOUND)  return ball.setPower(-vx, 0, vz);
-		if(uz >= UP_BOUND || dz <= DOWN_BOUND) return ball.setPower(vx, 0, -vz); 
+		else if(uz >= UP_BOUND || dz <= DOWN_BOUND) return ball.setPower(vx, 0, -vz); 
+		else  return ball.setPower(-vx, 0, -vz);
 	}
 
 	// if collision detected and still intersected, skip this time
