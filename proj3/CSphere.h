@@ -11,7 +11,7 @@
 #define TYPE_STRIPE_BALL 2
 #define TYPE_BLACK_BALL 3
 
-#define POWER_TO_ANGLE 0.1f
+#define POWER_TO_ANGLE 0.5f
 
 #define DISAPPEAR_Y		-0.4f
 
@@ -39,7 +39,6 @@ private:
 	D3DXVECTOR3			center;
 	float               radius;
 	D3DXVECTOR3			velocity;
-	D3DXVECTOR3			rotation;
 
 	static bool			isColliding[NUM_BALL][NUM_BALL];
 	static int			goaled_solid;
@@ -88,4 +87,5 @@ private:
 	LPSVERTEX				m_pVerts;
 	LPDIRECT3DTEXTURE9      m_pTexture;
 	int			            m_numVerts;
+	D3DXQUATERNION			quaternion;
 };
