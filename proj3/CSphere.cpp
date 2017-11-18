@@ -112,12 +112,22 @@ void CSphere::ballUpdate(float timeDiff)
 
 	if (abs(vx) > 0.01 || abs(vz) > 0.01)
 	{
+		// update pos
 		this->setCenter(center.x + TIME_SCALE*timeDiff*vx,
 			center.y + TIME_SCALE*timeDiff*vy,
 			center.z + TIME_SCALE*timeDiff*vz);
 
-		rotation.z += vx * POWER_TO_ANGLE;
-		rotation.x += -vz * POWER_TO_ANGLE;
+		// update angle
+		D3DXVECTOR3 normal(0, 1, 0);
+		D3DXVECTOR3 rotate_axis;
+		D3DXVECTOR3 norm_vel;
+		D3DXVec3Normalize(&norm_vel, &velocity);
+		D3DXVec3Cross(&rotate_axis, &norm_vel, &normal);
+		float angle = distance(0, 0, TIME_SCALE*timeDiff*vx, TIME_SCALE*timeDiff*vz) / M_RADIUS;
+
+		D3DXQUATERNION rotate;
+		D3DXQuaternionRotationAxis(&rotate, &rotate_axis, angle);
+		D3DXQuaternionMultiply(&quaternion, &rotate, &quaternion);
 	}
 	else { this->setPower(0, 0, 0); }
 
@@ -179,9 +189,8 @@ void CSphere::initState(int id, const float pos[3])
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> pi_rand(-PI, PI);
-	this->rotation.x = pi_rand(gen);
-	this->rotation.y = pi_rand(gen);
-	this->rotation.z = pi_rand(gen);
+	quaternion = D3DXQUATERNION(pi_rand(gen), pi_rand(gen), pi_rand(gen),pi_rand(gen));
+	D3DXQuaternionNormalize(&quaternion, &quaternion);
 }
 
 void CSphere::loadMaterial()
@@ -217,17 +226,14 @@ void CSphere::mapTexture()
 	if (SUCCEEDED(pMesh->LockVertexBuffer(0, (LPVOID *)&m_pVerts))) {
 		m_numVerts = pMesh->GetNumVertices();
 
-		D3DXMATRIX m_rotate;
-
-		D3DXMatrixIdentity(&m_rotate);
-		D3DXMatrixRotationYawPitchRoll(&m_rotate, this->rotation.y, this->rotation.x, this->rotation.z);
-
-		D3DXVECTOR3 rotated;
+		D3DXMATRIX rotate;
+		D3DXMatrixRotationQuaternion(&rotate, &quaternion);
 
 		for (int i = 0; i < m_numVerts; i++) {
-			D3DXVec3TransformCoord(&rotated, &(m_pVerts[i].norm), &m_rotate);
+			D3DXVECTOR3 rotated;
+			D3DXVec3TransformCoord(&rotated, &(m_pVerts[i].norm), &rotate);
 			m_pVerts[i].tu = asin(rotated.x) / (2 * PI) + 0.25f;
-			m_pVerts[i].tv = asin(rotated.y) / (PI)+0.5f;
+			m_pVerts[i].tv = asin(rotated.y) / (PI)+0.5f; 
 		}
 		pMesh->UnlockVertexBuffer();
 	}
