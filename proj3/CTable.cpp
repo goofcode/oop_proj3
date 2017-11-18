@@ -18,8 +18,9 @@ bool CTable::create(IDirect3DDevice9 * pDevice)
 bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 {
 	LPD3DXBUFFER pMaterialBuffer;
-	if (FAILED(D3DXLoadMeshFromX("rsc\\board.x", D3DXMESH_MANAGED, pDevice, NULL, &pMaterialBuffer, NULL, &m_numMaterials, &pMesh))) 
-		return false;
+
+	if (FAILED(D3DXLoadMeshFromXResource(NULL, MAKEINTRESOURCE(MODEL_TABLE), "X_MODEL",
+		D3DXMESH_MANAGED, pDevice, NULL,&pMaterialBuffer, NULL, &m_numMaterials, &pMesh))) return false;
 
 	D3DXMATERIAL* pMaterials = (D3DXMATERIAL*)pMaterialBuffer->GetBufferPointer();
 
@@ -28,44 +29,35 @@ bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 	
 	for (DWORD i = 0; i < m_numMaterials; i++)
 	{
-		string texture_file;
-		
 		m_pMeshMaterials[i] = pMaterials[i].MatD3D;
 		m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse;
-		//m_pMeshMaterials[i].Emissive = DX_WHITE * 0.2f;
 
+		int texture = 0;
 		switch (i) {
 			// outer wall
-			case 1: 
-				texture_file = "rsc\\wood.png";
-				break;
-			// ground 
+			case 1: texture = TEXTURE_WOOD; break;
+
+			// fabric
 			case 3:
 				m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse = DX_WHITE;
-				texture_file = "rsc\\green.png";
-				break;
+				texture = TEXTURE_FABRIC; break;
+				
 			// outside of hole
-			case 4:
-				ZeroMemory(&m_pMeshMaterials[i], sizeof(D3DMATERIAL9));
-				m_pMeshMaterials[i].Ambient = DX_WHITE* 0.3f;
-				m_pMeshMaterials[i].Diffuse = DX_WHITE * 0.8f;
-				m_pMeshMaterials[i].Specular = DX_WHITE * 0.3f;
-				m_pMeshMaterials[i].Emissive = DX_WHITE * 0.4f;
-				m_pMeshMaterials[i].Power = 30.0f;
-				texture_file = "rsc\\black.png";
-				break;
-			// inner of hole
-			case 5:
-				texture_file = "rsc\\hole.png";
-				break;
+			case 4:texture = TEXTURE_BLACK; break;
 
-			default:
-				break;
+			// inner of hole
+			case 5:texture = TEXTURE_HOLE; break;
+
+			default: break;
 		}
 
-		if (texture_file != "") {
-			if (FAILED(D3DXCreateTextureFromFile(pDevice, texture_file.c_str(), &m_ppMeshTextures[i])))
-				return false;
+		if (texture!=0){
+			HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(texture), "PNG");
+			DWORD dwResourceSize = SizeofResource(nullptr, hRes);
+			LPVOID pData = ::LockResource(LoadResource(nullptr, hRes));
+			if (hRes == NULL || dwResourceSize == 0 || pData == NULL) return false;
+
+			if (FAILED(D3DXCreateTextureFromFileInMemory(pDevice, pData, dwResourceSize, &m_ppMeshTextures[i]))) return false;
 		}
 		else m_ppMeshTextures[i] = NULL;
 	}

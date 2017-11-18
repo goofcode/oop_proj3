@@ -214,10 +214,12 @@ bool CSphere::getMesh(IDirect3DDevice9 * pDevice)
 
 bool CSphere::getTexture(IDirect3DDevice9 * pDevice)
 {
-	ostringstream sstream;
-	sstream << "rsc\\"<< this->id << ".png";
-	if (FAILED(D3DXCreateTextureFromFile(pDevice, sstream.str().c_str(), &m_pTexture)))
-		return false;
+	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(TEXTURE_BALL0 + this->id), "PNG");
+	DWORD dwResourceSize = SizeofResource(nullptr, hRes);
+	LPVOID pData = LockResource(LoadResource(nullptr, hRes));
+	if (hRes == NULL || dwResourceSize == 0 || pData == NULL) return false;
+
+	if (FAILED(D3DXCreateTextureFromFileInMemory(pDevice, pData, dwResourceSize, &m_pTexture))) return false;
 	return true;
 }
 

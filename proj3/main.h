@@ -7,6 +7,7 @@
 #include "CCue.h"
 #include "CCamera.h"
 #include "CManager.h"
+#include <thread>
 
 #define WND_TO_3D_RATIO 0.013f
 #define X_TO_THETA_RATIO 0.01f
@@ -23,4 +24,4 @@
 // depending on the computer playing game,
 // time goes too fast or too slow
 // if game speed is not good, please modify this value.
-#define TIME_CORRECTION_RATIO 0.8f
+#define TIME_CORRECTION_RATIO 1.0f

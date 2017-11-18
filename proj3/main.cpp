@@ -453,7 +453,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 	if(!InitDXWnd(hinstance, true, D3DDEVTYPE_HAL, WndProc)){ MessageBox(0, "InitD3D() - FAILED", 0, 0); return 0;}
 	if(!Setup( )) { MessageBox(0,"Setup() - FAILED", 0, 0); return 0; }
-
+	
 	EnterMsgLoop(Update, Display);
 
 	Cleanup( );

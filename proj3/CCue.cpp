@@ -107,15 +107,16 @@ bool CCue::loadModel(IDirect3DDevice9 * pDevice)
 void CCue::loadMaterial()
 {
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
-	//this->mMtrl.Ambient = DX_WHITE * 0.8f;
-	//this->mMtrl.Diffuse = DX_WHITE * 0.9f;
-	//this->mMtrl.Specular = DX_WHITE * 0.8f;
 	this->mMtrl.Emissive = DX_WHITE*0.7f;
-	//this->mMtrl.Power = 5.0f;
 }
 bool CCue::getTexture(IDirect3DDevice9 * pDevice)
 {
-	if (FAILED(D3DXCreateTextureFromFile(pDevice, "rsc\\cue.png", &m_pTexture))) return false;
+	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(TEXTURE_CUE), "PNG");
+	DWORD dwResourceSize = SizeofResource(nullptr, hRes);
+	LPVOID pData = ::LockResource(LoadResource(nullptr, hRes));
+	if (hRes == NULL || dwResourceSize == 0 || pData==NULL) return false;
+
+	if (FAILED(D3DXCreateTextureFromFileInMemory(pDevice, pData, dwResourceSize, &m_pTexture))) return false;
 	return true;
 }
 
