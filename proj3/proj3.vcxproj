@@ -168,22 +168,21 @@
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="rsc\0.jpg" />
-    <Image Include="rsc\1.jpg" />
-    <Image Include="rsc\10.jpg" />
-    <Image Include="rsc\11.jpg" />
-    <Image Include="rsc\12.jpg" />
-    <Image Include="rsc\13.jpg" />
-    <Image Include="rsc\14.jpg" />
-    <Image Include="rsc\15.jpg" />
-    <Image Include="rsc\2.jpg" />
-    <Image Include="rsc\3.jpg" />
-    <Image Include="rsc\4.jpg" />
-    <Image Include="rsc\5.jpg" />
-    <Image Include="rsc\6.jpg" />
-    <Image Include="rsc\7.jpg" />
-    <Image Include="rsc\8.jpg" />
-    <Image Include="rsc\9.jpg" />
+    <Image Include="rsc\1.png" />
+    <Image Include="rsc\10.png" />
+    <Image Include="rsc\11.png" />
+    <Image Include="rsc\12.png" />
+    <Image Include="rsc\13.png" />
+    <Image Include="rsc\14.png" />
+    <Image Include="rsc\15.png" />
+    <Image Include="rsc\2.png" />
+    <Image Include="rsc\3.png" />
+    <Image Include="rsc\4.png" />
+    <Image Include="rsc\5.png" />
+    <Image Include="rsc\6.png" />
+    <Image Include="rsc\7.png" />
+    <Image Include="rsc\8.png" />
+    <Image Include="rsc\9.png" />
     <Image Include="rsc\cue.png" />
     <Image Include="rsc\green.png" />
     <Image Include="rsc\hole.png" />

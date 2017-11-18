@@ -206,7 +206,7 @@ bool CSphere::getMesh(IDirect3DDevice9 * pDevice)
 bool CSphere::getTexture(IDirect3DDevice9 * pDevice)
 {
 	ostringstream sstream;
-	sstream << "rsc\\"<< this->id << ".jpg";
+	sstream << "rsc\\"<< this->id << ".png";
 	if (FAILED(D3DXCreateTextureFromFile(pDevice, sstream.str().c_str(), &m_pTexture)))
 		return false;
 	return true;

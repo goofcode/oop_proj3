@@ -67,54 +67,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="rsc\10.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\11.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\12.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\13.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\14.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\15.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\1.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\2.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\3.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\4.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\5.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\6.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\7.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\8.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\9.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="rsc\0.jpg">
-      <Filter>리소스 파일</Filter>
-    </Image>
     <Image Include="rsc\hole.png">
       <Filter>리소스 파일</Filter>
     </Image>
@@ -122,6 +74,51 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="rsc\cue.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\5.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\6.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\7.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\8.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\9.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\10.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\11.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\12.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\13.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\14.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\15.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\1.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\2.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\3.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="rsc\4.png">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>
