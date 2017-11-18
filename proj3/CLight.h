@@ -1,6 +1,6 @@
 #pragma once
 
-#include "d3dUtility.h"
+#include "common.h"
 
 class CLight {
 public:
@@ -11,11 +11,7 @@ public:
 	void destroy(void);
 	bool setLight(IDirect3DDevice9* pDevice);
 
-	D3DXVECTOR3 getPosition(void) const;
-
 private:
-	DWORD               m_index;
-	D3DLIGHT9           m_lit;
+	D3DLIGHT9           light;
 	ID3DXMesh*          pMesh;
-	d3d::BoundingSphere m_bound;
 };

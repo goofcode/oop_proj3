@@ -1,5 +1,5 @@
 #pragma once
-#include "d3dUtility.h"
+#include "common.h"
 #include "CSphere.h"
 
 #define PLAYER1 0

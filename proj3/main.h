@@ -1,12 +1,15 @@
 #pragma once
 
-#include "d3dUtility.h"
+#include "common.h"
 #include "CTable.h"
 #include "CSphere.h"
 #include "CLight.h"
 #include "CCue.h"
 #include "CCamera.h"
 #include "CManager.h"
+
+#define WND_TO_3D_RATIO 0.013f
+#define X_TO_THETA_RATIO 0.01f
 
 #define CHARGE_TIMER_ID 1
 #define CHARGE_TIMER_PERIOD 10

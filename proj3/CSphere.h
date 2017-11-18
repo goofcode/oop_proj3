@@ -1,6 +1,6 @@
 #pragma once
 
-#include "d3dUtility.h"
+#include "common.h"
 
 #define M_RADIUS 0.18f   // ball radius
 #define M_MASS 0.21f
@@ -14,6 +14,8 @@
 #define POWER_TO_ANGLE 0.5f
 
 #define DISAPPEAR_Y		-0.4f
+
+#define DECREASE_RATE 0.9982f
 
 #define FVF_SPHERE_VERTEX    (D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1)
 typedef struct SPHERE_VERTEX
@@ -75,7 +77,7 @@ public:
 	static void clearColliding(int id1, int id2);
 
 private:
-	void initState(int id, const float pos[3]);
+	void init(int id, const float pos[3]);
 	void loadMaterial();
 	bool getMesh(IDirect3DDevice9 * pDevice);
 	bool getTexture(IDirect3DDevice9 * pDevice);

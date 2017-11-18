@@ -1,6 +1,6 @@
 #pragma once
 
-#include "d3dUtility.h"
+#include "common.h"
 #include "CSphere.h"
 
 #define CUE_LENGTH 8.0f
@@ -14,7 +14,7 @@
 #define UNIT_POWER_DISCHARGE 2.0f
 
 #define DEFAULT_DIST_FROM_TARGET (CUE_LENGTH/2 + 0.4f)
-#define POWER_TO_DIST_RATIO 0.13
+#define POWER_TO_DIST_RATIO 0.13f
 #define CUE_VIEW_Y 1.5f
 
 #define FVF_CUE_VERTEX (D3DFVF_XYZ | D3DFVF_TEX1)
@@ -50,8 +50,8 @@ public:
 	void draw(IDirect3DDevice9* pDevice);
 	
 	D3DXVECTOR3 getCenter( ) const;
-	double getTheta() const;
-	double getPower() const;
+	float getTheta() const;
+	float getPower() const;
 	bool getIsAiming() const;
 	bool getIsCharging() const;
 
@@ -62,14 +62,13 @@ public:
 	void clearIsAiming();
 	void clearIsCharging();
 
-	void ready(double x, double y, double z, D3DXVECTOR3 target_center);
-	void rotate(double dTheta);
+	void ready(float x, float y, float z, D3DXVECTOR3 target_center);
+	void rotate(float dTheta);
 	void charge();
 	void discharge();
 	bool hasIntersected(const CSphere& ball) const;
 
 private:
-	void initState();
 	void loadMaterial();
 	bool loadModel(IDirect3DDevice9 * pDevice);
 	bool getTexture(IDirect3DDevice9 * pDevice);

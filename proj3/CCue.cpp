@@ -1,7 +1,7 @@
 #include "CCue.h"
 
 
-CCue::CCue(void){ pVB = NULL;}
+CCue::CCue(void){ pVB = NULL; center.y = QUEUE_Y; }
 CCue::~CCue(void) {}
 
 bool CCue::create(IDirect3DDevice9* pDevice)
@@ -9,7 +9,6 @@ bool CCue::create(IDirect3DDevice9* pDevice)
 	if (NULL == pDevice)
 		return false;
 
-	initState();
 	if (loadModel(pDevice) == false) return false;
 	loadMaterial();
 	if (getTexture(pDevice) == false) return false;
@@ -21,8 +20,6 @@ void CCue::destroy(void)
 {
 	if (m_pTexture != NULL)
 		m_pTexture->Release();
-
-
 }
 
 void CCue::draw(IDirect3DDevice9* pDevice)
@@ -48,7 +45,7 @@ D3DXVECTOR3 CCue::getCenter( ) const{
 	return center;
 }
 
-void CCue::ready(double x, double y, double z, D3DXVECTOR3 target_center){
+void CCue::ready(float x, float y, float z, D3DXVECTOR3 target_center){
 	
 	target = target_center;
 	theta = angle(target.x, target.z, x, z);
@@ -57,7 +54,7 @@ void CCue::ready(double x, double y, double z, D3DXVECTOR3 target_center){
 	setCenter();
 }
 
-void CCue::rotate(double dTheta){
+void CCue::rotate(float dTheta){
 	theta += dTheta;
 	setCenter();
 }
@@ -78,11 +75,6 @@ void CCue::discharge()
 bool CCue::hasIntersected(const CSphere & ball) const
 {
 	return distance(ball.getCenter().x, ball.getCenter().z, this->center.x, this->center.z) <= CUE_LENGTH/2 + ball.getRadius();
-}
-
-void CCue::initState()
-{
-	center.y = QUEUE_Y;
 }
 
 bool CCue::loadModel(IDirect3DDevice9 * pDevice)
@@ -115,11 +107,11 @@ bool CCue::loadModel(IDirect3DDevice9 * pDevice)
 void CCue::loadMaterial()
 {
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
-	this->mMtrl.Ambient = d3d::WHITE * 0.8f;
-	//this->mMtrl.Diffuse = d3d::WHITE * 0.9f;
-	this->mMtrl.Specular = d3d::WHITE * 0.8f;
-	this->mMtrl.Emissive = d3d::WHITE*0.7f;
-	this->mMtrl.Power = 50.0f;
+	//this->mMtrl.Ambient = DX_WHITE * 0.8f;
+	//this->mMtrl.Diffuse = DX_WHITE * 0.9f;
+	//this->mMtrl.Specular = DX_WHITE * 0.8f;
+	this->mMtrl.Emissive = DX_WHITE*0.7f;
+	//this->mMtrl.Power = 5.0f;
 }
 bool CCue::getTexture(IDirect3DDevice9 * pDevice)
 {
@@ -127,12 +119,12 @@ bool CCue::getTexture(IDirect3DDevice9 * pDevice)
 	return true;
 }
 
-double CCue::getTheta( ) const
+float CCue::getTheta( ) const
 {
 	return this->theta;
 }
 
-double CCue::getPower() const
+float CCue::getPower() const
 {
 	return this->power;
 }
@@ -174,7 +166,7 @@ void CCue::clearIsCharging()
 
 void CCue::setCenter()
 {
-	double dist_from_target = DEFAULT_DIST_FROM_TARGET + this->power * POWER_TO_DIST_RATIO;
+	float dist_from_target = DEFAULT_DIST_FROM_TARGET + this->power * POWER_TO_DIST_RATIO;
 	this->center.x = this->target.x - dist_from_target * cos(this->theta);
 	this->center.y = this->target.y;
 	this->center.z = this->target.z - dist_from_target * sin(this->theta);

@@ -16,7 +16,7 @@ bool CSphere::create(IDirect3DDevice9 * pDevice, int id, const float pos[3])
 	if (NULL == pDevice)
 		return false;
 
-	initState(id, pos);
+	init(id, pos);
 	loadMaterial();
 	if (getMesh(pDevice) == false) return false;
 	if (getTexture(pDevice) == false) return false;
@@ -86,7 +86,7 @@ bool CSphere::hitBy(CSphere& ball)
 	// if collision detected and still intersected, skip this time
 	else if (hasIntersected(ball) && getColliding(this->id, ball.getID())) { return true; }
 	// if two balls are completely separated, clear collision
-	else if (!hasIntersected(ball)) { clearColliding(this->id, ball.getID()); return false; }
+	else  { clearColliding(this->id, ball.getID()); return false; }
 }
 
 
@@ -106,9 +106,9 @@ void CSphere::ballUpdate(float timeDiff)
 {
 	const float TIME_SCALE = 3.3f;
 	D3DXVECTOR3 center = this->getCenter();
-	double vx = this->velocity.x;
-	double vy = this->velocity.y;
-	double vz = this->velocity.z;
+	float vx = this->velocity.x;
+	float vy = this->velocity.y;
+	float vz = this->velocity.z;
 
 	if (abs(vx) > 0.01 || abs(vz) > 0.01)
 	{
@@ -176,7 +176,7 @@ void CSphere::clearColliding(int id1, int id2) {
 	isColliding[id1][id2] = isColliding[id2][id1] = false;
 }
 
-void CSphere::initState(int id, const float pos[3])
+void CSphere::init(int id, const float pos[3])
 {
 	this->id = id;
 	this->center.x = pos[0];
@@ -196,10 +196,10 @@ void CSphere::initState(int id, const float pos[3])
 void CSphere::loadMaterial()
 {
 	ZeroMemory(&mMtrl, sizeof(mMtrl));
-	this->mMtrl.Ambient = d3d::WHITE * 0.3f;
-	this->mMtrl.Diffuse = d3d::WHITE * 0.8f;
-	this->mMtrl.Specular = d3d::WHITE * 0.4f;
-	this->mMtrl.Emissive = d3d::WHITE*0.5f;
+	this->mMtrl.Ambient = DX_WHITE * 0.3f;
+	this->mMtrl.Diffuse = DX_WHITE * 0.8f;
+	this->mMtrl.Specular = DX_WHITE * 0.4f;
+	this->mMtrl.Emissive = DX_WHITE*0.5f;
 	this->mMtrl.Power = 40.0f;
 }
 

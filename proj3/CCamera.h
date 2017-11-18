@@ -1,5 +1,5 @@
 #pragma once
-#include "d3dUtility.h"
+#include "common.h"
 
 #define POS_X 0.0f
 #define POS_Y 12.0f

@@ -32,7 +32,7 @@ bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 		
 		m_pMeshMaterials[i] = pMaterials[i].MatD3D;
 		m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse;
-		//m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.2f;
+		//m_pMeshMaterials[i].Emissive = DX_WHITE * 0.2f;
 
 		switch (i) {
 			// outer wall
@@ -41,16 +41,16 @@ bool CTable::loadModel(IDirect3DDevice9 * pDevice)
 				break;
 			// ground 
 			case 3:
-				m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse = d3d::WHITE;
+				m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse = DX_WHITE;
 				texture_file = "rsc\\green.png";
 				break;
 			// outside of hole
 			case 4:
 				ZeroMemory(&m_pMeshMaterials[i], sizeof(D3DMATERIAL9));
-				m_pMeshMaterials[i].Ambient = d3d::WHITE* 0.3f;
-				m_pMeshMaterials[i].Diffuse = d3d::WHITE * 0.8f;
-				m_pMeshMaterials[i].Specular = d3d::WHITE * 0.3f;
-				m_pMeshMaterials[i].Emissive = d3d::WHITE * 0.4f;
+				m_pMeshMaterials[i].Ambient = DX_WHITE* 0.3f;
+				m_pMeshMaterials[i].Diffuse = DX_WHITE * 0.8f;
+				m_pMeshMaterials[i].Specular = DX_WHITE * 0.3f;
+				m_pMeshMaterials[i].Emissive = DX_WHITE * 0.4f;
 				m_pMeshMaterials[i].Power = 30.0f;
 				texture_file = "rsc\\black.png";
 				break;

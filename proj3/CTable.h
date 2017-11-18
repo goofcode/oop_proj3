@@ -1,9 +1,9 @@
 #pragma once
-#include "d3dUtility.h"
+#include "common.h"
 #include "CManager.h"
 #include "CSphere.h"
 
-#define TABLE_WIDTH		11.5f
+#define TABLE_WIDTH		11.6f
 #define TABLE_DEPTH		5.75f
 
 #define LEFT_BOUND		-TABLE_WIDTH/2

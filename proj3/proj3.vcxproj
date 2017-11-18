@@ -154,7 +154,6 @@
     <ClCompile Include="CManager.cpp" />
     <ClCompile Include="CSphere.cpp" />
     <ClCompile Include="CTable.cpp" />
-    <ClCompile Include="d3dUtility.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +163,7 @@
     <ClInclude Include="CManager.h" />
     <ClInclude Include="CSphere.h" />
     <ClInclude Include="CTable.h" />
-    <ClInclude Include="d3dUtility.h" />
+    <ClInclude Include="common.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
